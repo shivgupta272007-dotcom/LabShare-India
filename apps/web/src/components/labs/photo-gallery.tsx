@@ -184,7 +184,59 @@ export function PhotoGallery({ lab, className = '', locale = 'en' }: PhotoGaller
 /**
  * Curated high-resolution imagery for each lab category
  */
-export function getDefaultLabPhotos(type: string, labName: string): LabPhoto[] {
+export function getDefaultLabPhotos(type: string, labName: string = ''): LabPhoto[] {
+  const isRobotics =
+    type === 'WORKSHOP' ||
+    labName.toLowerCase().includes('robotics') ||
+    labName.toLowerCase().includes('robot') ||
+    labName.toLowerCase().includes('engineering') ||
+    labName.toLowerCase().includes('stem')
+
+  if (isRobotics) {
+    return [
+      {
+        id: 'p-ws-0',
+        labId: 'auto',
+        url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80',
+        caption: 'High-Tech Robotics Automation & STEM Innovation Lab',
+        isPrimary: true,
+        order: 1,
+      },
+      {
+        id: 'p-ws-1',
+        labId: 'auto',
+        url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
+        caption: 'Robotics Engineering Workbench & Rapid Prototyping Station',
+        isPrimary: false,
+        order: 2,
+      },
+      {
+        id: 'p-ws-2',
+        labId: 'auto',
+        url: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=1200&q=80',
+        caption: 'Arduino Microcontroller Breadboards, Sensors & Circuitry',
+        isPrimary: false,
+        order: 2,
+      },
+      {
+        id: 'p-ws-3',
+        labId: 'auto',
+        url: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80',
+        caption: 'Electronic Soldering Station & Digital Oscilloscope Testing',
+        isPrimary: false,
+        order: 3,
+      },
+      {
+        id: 'p-ws-4',
+        labId: 'auto',
+        url: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80',
+        caption: 'Student STEM Rover Chassis & Autonomous Motors',
+        isPrimary: false,
+        order: 4,
+      },
+    ]
+  }
+
   switch (type) {
     case 'COMPUTER_LAB':
       return [
@@ -232,41 +284,6 @@ export function getDefaultLabPhotos(type: string, labName: string): LabPhoto[] {
           order: 2,
         },
       ]
-    case 'WORKSHOP':
-      return [
-        {
-          id: 'p-ws-1',
-          labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Robotics Engineering Workbench & Rapid Prototyping Station',
-          isPrimary: true,
-          order: 1,
-        },
-        {
-          id: 'p-ws-2',
-          labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Arduino Microcontroller Breadboards, Sensors & Circuitry',
-          isPrimary: false,
-          order: 2,
-        },
-        {
-          id: 'p-ws-3',
-          labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Electronic Soldering Station & Digital Oscilloscope Testing',
-          isPrimary: false,
-          order: 3,
-        },
-        {
-          id: 'p-ws-4',
-          labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Student STEM Rover Chassis & Autonomous Motors',
-          isPrimary: false,
-          order: 4,
-        },
-      ]
     case 'LIBRARY':
       return [
         {
@@ -284,8 +301,8 @@ export function getDefaultLabPhotos(type: string, labName: string): LabPhoto[] {
         {
           id: 'p-sci-1',
           labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Main Experimental Floor with Analytical Balances & Glassware',
+          url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Chemical Titration, Beakers & Reagent Testing Station',
           isPrimary: true,
           order: 1,
         },
@@ -300,16 +317,16 @@ export function getDefaultLabPhotos(type: string, labName: string): LabPhoto[] {
         {
           id: 'p-sci-3',
           labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Chemical Titration & Reagent Station',
+          url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Student Experimentation & Observation Workbenches',
           isPrimary: false,
           order: 3,
         },
         {
           id: 'p-sci-4',
           labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Student Experimentation & Observation Workbenches',
+          url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Physics Mechanics & Electronics Bench',
           isPrimary: false,
           order: 4,
         },

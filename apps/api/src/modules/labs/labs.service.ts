@@ -164,6 +164,40 @@ export class LabsService {
         description: `Fully equipped Central Govt. CBSE science laboratory featuring compound digital microscopes, analytical balances, optics benches, and robotics experimentation kits. Open for neighboring school visits after school hours.`,
         floor: 1,
         building: 'Dr. C.V. Raman Science Block',
+        photos: [
+          {
+            id: `photo-${orgPrefix}-sci-1`,
+            labId: `lab-${orgPrefix}-science`,
+            url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Robotics Engineering & Autonomous Prototyping Workstation',
+            isPrimary: true,
+            order: 1,
+          },
+          {
+            id: `photo-${orgPrefix}-sci-2`,
+            labId: `lab-${orgPrefix}-science`,
+            url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Hardware Workbench, Microcontrollers & STEM Kits',
+            isPrimary: false,
+            order: 2,
+          },
+          {
+            id: `photo-${orgPrefix}-sci-3`,
+            labId: `lab-${orgPrefix}-science`,
+            url: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Arduino Microcontroller Breadboards, Sensors & Circuitry',
+            isPrimary: false,
+            order: 3,
+          },
+          {
+            id: `photo-${orgPrefix}-sci-4`,
+            labId: `lab-${orgPrefix}-science`,
+            url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Chemical Titration, Analytical Balances & Science Apparatus',
+            isPrimary: false,
+            order: 4,
+          },
+        ],
       },
       {
         orgId: `${orgPrefix}-kv`,
@@ -183,6 +217,24 @@ export class LabsService {
         description: `Air-conditioned computer lab with 40 Intel Core i7 terminals, gigabit fiber connection, pre-installed Python, Scratch, and Linux development suites. Ideal for rural coaching batches and coding workshops.`,
         floor: 2,
         building: 'Aryabhata Computing Centre',
+        photos: [
+          {
+            id: `photo-${orgPrefix}-cs-1`,
+            labId: `lab-${orgPrefix}-cs`,
+            url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80',
+            caption: 'High-Performance Workstation Floor (40 Terminals)',
+            isPrimary: true,
+            order: 1,
+          },
+          {
+            id: `photo-${orgPrefix}-cs-2`,
+            labId: `lab-${orgPrefix}-cs`,
+            url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Collaborative Coding & Project Bench',
+            isPrimary: false,
+            order: 2,
+          },
+        ],
       },
       {
         orgId: `${orgPrefix}-model`,
@@ -202,6 +254,24 @@ export class LabsService {
         description: `Large tiered multimedia theatre equipped with a 4K laser projector, Dolby acoustics, interactive smart board, and science documentary streaming for community demonstrations.`,
         floor: 0,
         building: 'Main Academic Pavilion',
+        photos: [
+          {
+            id: `photo-${orgPrefix}-av-1`,
+            labId: `lab-${orgPrefix}-av`,
+            url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Tiered 4K Laser Projection Hall & Surround Acoustics',
+            isPrimary: true,
+            order: 1,
+          },
+          {
+            id: `photo-${orgPrefix}-av-2`,
+            labId: `lab-${orgPrefix}-av`,
+            url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80',
+            caption: 'Interactive Smart Board & Video Demonstration Station',
+            isPrimary: false,
+            order: 2,
+          },
+        ],
       },
     ]
 
@@ -276,6 +346,7 @@ export class LabsService {
           totalBookings: 38,
           totalHoursShared: 114,
           trustScore: s.trustScore,
+          photos: s.photos,
           isActive: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),

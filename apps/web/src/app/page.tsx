@@ -169,8 +169,8 @@ export default function HomePage() {
           <div className="lg:col-span-5 relative w-full flex items-center justify-center">
             <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-border group bg-slate-900">
               <img
-                src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80"
-                alt="Students in Science Laboratory"
+                src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80"
+                alt="Robotics & STEM Engineering Laboratory"
                 className="w-full h-[360px] sm:h-[420px] object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/20 pointer-events-none" />
