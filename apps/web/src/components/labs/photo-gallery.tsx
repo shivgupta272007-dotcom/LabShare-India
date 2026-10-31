@@ -237,18 +237,34 @@ export function getDefaultLabPhotos(type: string, labName: string): LabPhoto[] {
         {
           id: 'p-ws-1',
           labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Robotics Assembly, Breadboards & Microcontroller Station',
+          url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Robotics Engineering Workbench & Rapid Prototyping Station',
           isPrimary: true,
           order: 1,
         },
         {
           id: 'p-ws-2',
           labId: 'auto',
-          url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
-          caption: 'Rapid Prototyping & Mechanical Tools Bench',
+          url: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Arduino Microcontroller Breadboards, Sensors & Circuitry',
           isPrimary: false,
           order: 2,
+        },
+        {
+          id: 'p-ws-3',
+          labId: 'auto',
+          url: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Electronic Soldering Station & Digital Oscilloscope Testing',
+          isPrimary: false,
+          order: 3,
+        },
+        {
+          id: 'p-ws-4',
+          labId: 'auto',
+          url: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Student STEM Rover Chassis & Autonomous Motors',
+          isPrimary: false,
+          order: 4,
         },
       ]
     case 'LIBRARY':
