@@ -3,5 +3,5 @@
   "framework": "nextjs",
   "buildCommand": "pnpm --filter @labshare/shared build && cd apps/web && pnpm run build && rm -rf ../../.next && cp -r .next ../../.next && cp -r public ../../public",
   "outputDirectory": ".next",
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install --no-frozen-lockfile"
 }
