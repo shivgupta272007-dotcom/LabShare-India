@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsx src/main.ts",
+    "dev": "tsc --project tsconfig.json && node dist/main.js",
     "build": "tsc --project tsconfig.json",
     "start": "node dist/main.js",
     "test": "node --test 'dist/**/*.spec.js'",
