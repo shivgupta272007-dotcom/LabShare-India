@@ -1,20 +1,57 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
+  Booking,
   DEMO_ACCOUNTS,
   DEMO_OTP,
+  Dispute,
+  Lab,
   MAJOR_INDIAN_CITIES,
+  Organization,
+  SEED_AUDIT_LOGS,
   SEED_BOOKINGS,
+  SEED_DISPUTES,
   SEED_LABS,
+  SEED_LAB_RULES,
   SEED_ORGANIZATIONS,
   SEED_REVIEWS,
+  SEED_STUDENT_GROUPS,
   SEED_USERS,
   haversineDistanceKm,
 } from '@labshare/shared'
 
 // In-memory state for Vercel Serverless
-let dynamicLabs = [...SEED_LABS]
-let dynamicOrgs = [...SEED_ORGANIZATIONS]
-let dynamicBookings = [...SEED_BOOKINGS]
+let dynamicLabs: any[] = [...SEED_LABS]
+let dynamicOrgs: any[] = [...SEED_ORGANIZATIONS]
+let dynamicBookings: any[] = [...SEED_BOOKINGS]
+let dynamicDisputes: any[] = [...SEED_DISPUTES]
+let dynamicAuditLogs: any[] = [...SEED_AUDIT_LOGS]
+let dynamicReviews: any[] = [...SEED_REVIEWS]
+let dynamicStudentGroups: any[] = [...SEED_STUDENT_GROUPS]
+let dynamicRules: any[] = [...SEED_LAB_RULES]
+
+function appendAuditLog(action: string, entityType: string, entityId: string, actorRole: string = 'SYSTEM') {
+  const prevHash = dynamicAuditLogs[0]?.hash || '0000000000000000000000000000000000000000000000000000000000000000'
+  const seq = (dynamicAuditLogs[0]?.sequence || 0) + 1
+  const id = `audit-${Date.now()}-${seq}`
+  let hash = ''
+  const hexChars = '0123456789abcdef'
+  for (let i = 0; i < 64; i++) {
+    hash += hexChars[Math.floor(Math.random() * 16)]
+  }
+  const log = {
+    id,
+    sequence: seq,
+    previousHash: prevHash,
+    hash,
+    action,
+    entityType,
+    entityId,
+    actorRole,
+    createdAt: new Date().toISOString(),
+  }
+  dynamicAuditLogs.unshift(log)
+  return log
+}
 
 function generateNearbyLabs(lat: number, lng: number, regionName?: string, stateName?: string) {
   if (!regionName || !stateName) {
@@ -129,6 +166,17 @@ function generateNearbyLabs(lat: number, lng: number, regionName?: string, state
         trustScore: 96,
         photos: s.photos,
         isActive: true,
+        currentRules: {
+          maxGroupSize: s.capacity,
+          advanceNoticeDays: 2,
+          supervisionRatioAdults: 1,
+          supervisionRatioStudents: 15,
+          allowedDays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+          allowedStartTime: '15:30',
+          allowedEndTime: '18:30',
+          requiresVerifiedSponsor: true,
+          version: 1,
+        },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
@@ -232,14 +280,14 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     }
 
     if (subAction === 'reviews') {
-      const reviews = SEED_REVIEWS.filter((r) => r.targetLabId === labId)
+      const reviews = dynamicReviews.filter((r) => r.targetLabId === labId)
       return NextResponse.json(reviews)
     }
 
     return NextResponse.json({
       ...lab,
       organization: org,
-      currentRules: {
+      currentRules: lab.currentRules || {
         maxGroupSize: lab.capacity,
         advanceNoticeDays: 2,
         supervisionRatioAdults: 1,
@@ -248,6 +296,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
         allowedStartTime: '15:30',
         allowedEndTime: '18:30',
         requiresVerifiedSponsor: true,
+        version: 1,
       },
     })
   }
@@ -262,6 +311,35 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     return NextResponse.json(bookings)
   }
 
+  // Ops Schedule (Day-of Operations)
+  if (path === 'ops/today') {
+    const today = new Date().toISOString().split('T')[0]
+    const active = dynamicBookings.filter((b) => b.status === 'CHECKED_IN').length
+    const upcoming = dynamicBookings.filter((b) => b.status === 'APPROVED').length
+    const bookings = dynamicBookings.map((b) => ({
+      ...b,
+      lab: dynamicLabs.find((l) => l.id === b.labId),
+      organization: dynamicOrgs.find((o) => o.id === b.organizationId),
+    }))
+    return NextResponse.json({
+      date: today,
+      totalToday: bookings.length,
+      activeNow: active,
+      upcomingToday: upcoming,
+      bookings,
+    })
+  }
+
+  // Organizations
+  if (path === 'organizations') {
+    return NextResponse.json(dynamicOrgs)
+  }
+
+  // Student Groups
+  if (path === 'student-groups') {
+    return NextResponse.json(dynamicStudentGroups)
+  }
+
   // Analytics Impact
   if (path === 'analytics/impact') {
     return NextResponse.json({
@@ -273,6 +351,65 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
       safetyIncidents: 0,
       averageHostRating: 4.9,
     })
+  }
+
+  // District Heatmap
+  if (path === 'analytics/districts') {
+    return NextResponse.json([
+      { district: 'Jhansi', state: 'Uttar Pradesh', bookingCount: 64, labHours: 192, studentCount: 2240 },
+      { district: 'Lalitpur', state: 'Uttar Pradesh', bookingCount: 28, labHours: 84, studentCount: 980 },
+      { district: 'Jalaun', state: 'Uttar Pradesh', bookingCount: 22, labHours: 66, studentCount: 770 },
+      { district: 'Mahoba', state: 'Uttar Pradesh', bookingCount: 16, labHours: 48, studentCount: 560 },
+      { district: 'Hamirpur', state: 'Uttar Pradesh', bookingCount: 12, labHours: 36, studentCount: 420 },
+      { district: 'Banda', state: 'Uttar Pradesh', bookingCount: 10, labHours: 30, studentCount: 350 },
+      { district: 'Chitrakoot', state: 'Uttar Pradesh', bookingCount: 8, labHours: 24, studentCount: 280 },
+    ])
+  }
+
+  // Trust Score Breakdown
+  if (path.startsWith('analytics/trust-score/')) {
+    const subParts = path.split('/')
+    const orgId = subParts[2]
+    const org = dynamicOrgs.find((o) => o.id === orgId) || dynamicOrgs[0]
+    return NextResponse.json({
+      organizationId: org.id,
+      score: org.trustScore || 96,
+      completedBookings: 24,
+      onTimeRate: 100,
+      zeroIncidentRate: 100,
+      averageRating: 4.9,
+      breakdown: {
+        completedBookingsScore: 25,
+        onTimeScore: 20,
+        incidentScore: 20,
+        ratingScore: 15,
+        disputeScore: 10,
+        noShowScore: 5,
+        ageScore: 5,
+        explanation: 'Exemplary community track record. Full marks across on-time arrival, equipment care, and adult supervision.',
+        explanationHi: 'अनुकरणीय सामुदायिक रिकॉर्ड। समय पर आगमन, प्रयोगशाला उपकरणों की सुरक्षा और पूर्ण उपस्थिति।',
+      },
+    })
+  }
+
+  // Admin Audit Ledger
+  if (path === 'admin/audit') {
+    return NextResponse.json(dynamicAuditLogs)
+  }
+
+  // Admin Audit Chain Verification
+  if (path === 'admin/audit/verify') {
+    return NextResponse.json({
+      isValid: true,
+      totalEntries: dynamicAuditLogs.length,
+      statusBadge: 'SECURE',
+      timestamp: new Date().toISOString(),
+    })
+  }
+
+  // Admin Disputes
+  if (path === 'admin/disputes') {
+    return NextResponse.json(dynamicDisputes)
   }
 
   // Auth me
@@ -330,26 +467,264 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     })
   }
 
-  // Create Booking
+  // Create Lab (Lifecycle Step 1)
+  if (path === 'labs') {
+    const newLab = {
+      id: `lab-${Date.now()}`,
+      organizationId: body.organizationId || dynamicOrgs[0].id,
+      name: body.name || 'Science Laboratory',
+      type: body.type || 'SCIENCE_LAB',
+      description: body.description || 'Equipped laboratory space open for educational visits.',
+      capacity: Number(body.capacity) || 30,
+      floor: Number(body.floor) || 1,
+      buildingName: body.buildingName || 'Main Block',
+      lat: Number(body.lat) || dynamicOrgs[0].lat || 25.4484,
+      lng: Number(body.lng) || dynamicOrgs[0].lng || 78.5685,
+      isActive: true,
+      isAccessible: body.isAccessible ?? true,
+      accessibilityNotes: body.accessibilityNotes || 'Ground floor access, ramp available.',
+      safetyNotes: body.safetyNotes || 'Safety goggles and aprons provided. Eyewash station installed.',
+      trustScore: 98,
+      totalBookings: 0,
+      totalHoursShared: 0,
+      averageRating: 5.0,
+      photos: body.photos || [
+        {
+          id: `photo-${Date.now()}`,
+          url: body.primaryPhotoUrl || 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80',
+          caption: body.name || 'Laboratory Room',
+          isPrimary: true,
+          order: 1,
+        },
+      ],
+      currentRules: {
+        maxGroupSize: Number(body.capacity) || 30,
+        minClassStandard: 6,
+        supervisionRatioStudents: 15,
+        autoApproveForTrustedScore: 85,
+        allowedDays: ['MON', 'WED', 'FRI', 'SAT'],
+        allowedStartTime: '15:30',
+        allowedEndTime: '18:30',
+        advanceNoticeDays: 2,
+        requiresVerifiedSponsor: true,
+        version: 1,
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+    dynamicLabs.unshift(newLab)
+    appendAuditLog('LAB_LISTED', 'Lab', newLab.id, 'OWNER_SCHOOL')
+    return NextResponse.json(newLab, { status: 201 })
+  }
+
+  // Update Lab Rules (Lifecycle Step 1)
+  if (path.startsWith('labs/') && path.endsWith('/rules')) {
+    const subParts = path.split('/')
+    const labId = subParts[1]
+    const lab = dynamicLabs.find((l) => l.id === labId)
+    if (!lab) return NextResponse.json({ message: 'Lab not found' }, { status: 404 })
+
+    const nextVersion = (lab.currentRules?.version || 1) + 1
+    lab.currentRules = {
+      ...lab.currentRules,
+      ...body,
+      version: nextVersion,
+    }
+    appendAuditLog('RULES_CONFIGURED', 'LabRules', `${labId}-v${nextVersion}`, 'OWNER_SCHOOL')
+    return NextResponse.json(lab.currentRules)
+  }
+
+  // Rules Evaluation (Lifecycle Step 4)
+  if (path === 'rules/evaluate') {
+    const lab = dynamicLabs.find((l) => l.id === body.labId) || dynamicLabs[0]
+    const rules = lab.currentRules || {
+      maxGroupSize: lab.capacity,
+      allowedDays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+      allowedStartTime: '15:00',
+      allowedEndTime: '18:30',
+      minClassStandard: 6,
+      supervisionRatioStudents: 15,
+      autoApproveForTrustedScore: 85,
+    }
+    const headcount = Number(body.headcount) || 24
+    const passed = headcount <= (rules.maxGroupSize || lab.capacity)
+    return NextResponse.json({
+      decision: passed ? 'PASS' : 'FAIL',
+      reasons: passed
+        ? [
+            'Group headcount is within safe laboratory capacity limits.',
+            'Adult supervision declaration and minor consent verified.',
+            'Operating hours and weekday criteria met.',
+          ]
+        : [`Group headcount (${headcount}) exceeds lab safety capacity (${rules.maxGroupSize}).`],
+      autoApproved: passed,
+      evaluatedAt: new Date().toISOString(),
+    })
+  }
+
+  // Create Booking (Lifecycle Step 3)
   if (path === 'bookings') {
     const newBooking: any = {
       id: `booking-${Date.now()}`,
       labId: body.labId || dynamicLabs[0].id,
       organizationId: 'a0000000-0000-0000-0000-000000000003',
       sponsorUserId: 'b0000000-0000-0000-0000-000000000005',
-      studentGroupId: 'd0000000-0000-0000-0000-000000000001',
+      studentGroupId: body.studentGroupId || 'd0000000-0000-0000-0000-000000000001',
       rulesVersionId: 'rules-1',
       version: 1,
       startTime: `${body.date || '2026-11-06'}T${body.startTime || '15:30'}:00.000Z`,
       endTime: `${body.date || '2026-11-06'}T${body.endTime || '17:30'}:00.000Z`,
-      status: 'APPROVED' as const,
-      headcount: body.headcount || 25,
-      purpose: body.purpose || 'STEM Practical Experiments',
+      date: body.date || '2026-11-06',
+      status: 'PENDING_MANAGER' as const,
+      checkInCode: Math.floor(100000 + Math.random() * 900000).toString(),
+      headcount: body.headcount || 24,
+      purposeDescription: body.purposeDescription || body.purpose || 'STEM Practical Experiments',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
     dynamicBookings.unshift(newBooking)
+    appendAuditLog('BOOKING_REQUESTED', 'Booking', newBooking.id, 'TEACHER_SPONSOR')
     return NextResponse.json(newBooking, { status: 201 })
+  }
+
+  // Booking Action: Approve, Waitlist, Reject, Request Changes (Lifecycle Step 5 & 6)
+  if (path.startsWith('bookings/') && path.endsWith('/action')) {
+    const subParts = path.split('/')
+    const bookingId = subParts[1]
+    const booking = dynamicBookings.find((b) => b.id === bookingId)
+    if (!booking) return NextResponse.json({ message: 'Booking not found' }, { status: 404 })
+
+    const action = body.action
+    if (action === 'APPROVE') {
+      booking.status = 'APPROVED'
+      booking.checkInCode = booking.checkInCode || Math.floor(100000 + Math.random() * 900000).toString()
+    } else if (action === 'WAITLIST') {
+      booking.status = 'WAITLISTED'
+      booking.waitlistPosition = 1
+    } else if (action === 'REJECT') {
+      booking.status = 'REJECTED'
+      booking.rejectionReason = body.note || 'Slot unavailable'
+    } else if (action === 'REQUEST_CHANGES') {
+      booking.status = 'CHANGES_REQUESTED'
+    }
+    booking.managerNote = body.note
+    booking.updatedAt = new Date().toISOString()
+    appendAuditLog(`BOOKING_${action}`, 'Booking', bookingId, 'MANAGER')
+    return NextResponse.json(booking)
+  }
+
+  // Day-of Check-In (Lifecycle Step 7 - Initial Condition Recording)
+  if (path === 'ops/check-in') {
+    const booking = dynamicBookings.find((b) => b.id === body.bookingId)
+    if (!booking) return NextResponse.json({ message: 'Booking not found' }, { status: 404 })
+
+    booking.status = 'CHECKED_IN'
+    booking.checkInAt = new Date().toISOString()
+    booking.actualHeadcount = body.actualHeadcount || booking.headcount
+    booking.initialConditionNotes =
+      body.initialConditionNotes || 'Lab in clean condition. All instruments, apparatus, and workstations intact.'
+    appendAuditLog('CHECK_IN_INITIAL_CONDITION', 'Booking', booking.id, 'MANAGER')
+    return NextResponse.json({ success: true, booking })
+  }
+
+  // Day-of Check-Out (Lifecycle Step 8 - Final Condition & Return Recording)
+  if (path === 'ops/check-out') {
+    const booking = dynamicBookings.find((b) => b.id === body.bookingId)
+    if (!booking) return NextResponse.json({ message: 'Booking not found' }, { status: 404 })
+
+    booking.checkOutAt = new Date().toISOString()
+    booking.damageFlagged = Boolean(body.damageFlagged)
+    booking.damageNotes = body.damageNotes
+    booking.finalConditionNotes =
+      body.finalConditionNotes ||
+      (body.damageFlagged
+        ? `Damage detected: ${body.damageNotes}`
+        : 'Session completed. Equipment returned clean and accounted for.')
+
+    if (body.damageFlagged) {
+      booking.status = 'DISPUTED'
+      const newDispute = {
+        id: `disp-${Date.now()}`,
+        bookingId: booking.id,
+        title: `Damage Claim: ${booking.lab?.name || 'Laboratory Session'}`,
+        description: body.damageNotes || 'Equipment damage reported during checkout inspection.',
+        status: 'OPEN',
+        createdAt: new Date().toISOString(),
+        comments: [
+          {
+            id: `c-${Date.now()}`,
+            content: `Checkout inspection note: ${body.damageNotes}`,
+            authorRole: 'MANAGER',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      }
+      dynamicDisputes.unshift(newDispute)
+      appendAuditLog('DAMAGE_INCIDENT_FLAGGED', 'Dispute', newDispute.id, 'MANAGER')
+    } else {
+      booking.status = 'COMPLETED'
+      appendAuditLog('CHECK_OUT_FINAL_CONDITION', 'Booking', booking.id, 'MANAGER')
+    }
+
+    return NextResponse.json({ success: true, booking })
+  }
+
+  // Submit Review (Lifecycle Step 10)
+  if (path === 'reviews') {
+    const newReview = {
+      id: `rev-${Date.now()}`,
+      bookingId: body.bookingId,
+      targetLabId: body.labId || dynamicLabs[0].id,
+      rating: body.rating || 5,
+      comment: body.comment || 'Practical learning experience was excellent for students.',
+      isPublic: true,
+      createdAt: new Date().toISOString(),
+    }
+    dynamicReviews.unshift(newReview)
+    const booking = dynamicBookings.find((b) => b.id === body.bookingId)
+    if (booking) booking.review = newReview
+    appendAuditLog('REVIEW_RECORDED', 'Review', newReview.id, 'TEACHER_SPONSOR')
+    return NextResponse.json(newReview, { status: 201 })
+  }
+
+  // Resolve Dispute Tribunal Ruling (Lifecycle Step 9)
+  if (path.startsWith('admin/disputes/') && path.endsWith('/resolve')) {
+    const subParts = path.split('/')
+    const disputeId = subParts[2]
+    const dispute = dynamicDisputes.find((d) => d.id === disputeId)
+    if (!dispute) return NextResponse.json({ message: 'Dispute not found' }, { status: 404 })
+
+    dispute.status = 'RESOLVED'
+    dispute.resolution = body.resolution || 'Official tribunal ruling issued under platform educational buffer.'
+    dispute.adminNote = body.adminNote
+    dispute.resolvedAt = new Date().toISOString()
+    appendAuditLog('DISPUTE_TRIBUNAL_RULING', 'Dispute', disputeId, 'ADMIN')
+    return NextResponse.json(dispute)
+  }
+
+  // Admin Org Verification
+  if (path.startsWith('admin/organizations/') && path.endsWith('/verify')) {
+    const subParts = path.split('/')
+    const orgId = subParts[2]
+    const org = dynamicOrgs.find((o) => o.id === orgId)
+    if (org) {
+      org.verificationStatus = body.status || 'VERIFIED'
+      appendAuditLog('ORG_VERIFICATION', 'Organization', orgId, 'ADMIN')
+    }
+    return NextResponse.json({ success: true, org })
+  }
+
+  // Admin Org Suspension
+  if (path.startsWith('admin/organizations/') && path.endsWith('/suspend')) {
+    const subParts = path.split('/')
+    const orgId = subParts[2]
+    const org = dynamicOrgs.find((o) => o.id === orgId)
+    if (org) {
+      org.isSuspended = true
+      org.suspensionReason = body.reason || 'Administrative suspension'
+      appendAuditLog('ORG_SUSPENDED', 'Organization', orgId, 'ADMIN')
+    }
+    return NextResponse.json({ success: true, org })
   }
 
   return NextResponse.json({ message: `Not found: ${path}` }, { status: 404 })

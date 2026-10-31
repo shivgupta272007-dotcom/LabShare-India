@@ -235,6 +235,7 @@ export class ApiClient {
       actualHeadcount: number
       supervisingAdultName: string
       supervisingAdultPhone: string
+      initialConditionNotes?: string
     }) =>
       this.request<any>('/ops/check-in', {
         method: 'POST',
@@ -245,6 +246,7 @@ export class ApiClient {
       bookingId: string
       damageFlagged: boolean
       damageNotes?: string
+      finalConditionNotes?: string
     }) =>
       this.request<any>('/ops/check-out', {
         method: 'POST',

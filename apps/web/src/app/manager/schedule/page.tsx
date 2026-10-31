@@ -35,10 +35,12 @@ export default function DayOfOpsConsolePage() {
   const [checkInBooking, setCheckInBooking] = useState<Booking | null>(null)
   const [code, setCode] = useState('')
   const [actualHeadcount, setActualHeadcount] = useState(24)
+  const [initialConditionNotes, setInitialConditionNotes] = useState('Pristine & Clean: All 24 microscope stations, reagents, and power supplies verified intact.')
   const [submittingCheckIn, setSubmittingCheckIn] = useState(false)
 
   // Check-out Modal
   const [checkOutBooking, setCheckOutBooking] = useState<Booking | null>(null)
+  const [finalConditionNotes, setFinalConditionNotes] = useState('All stations cleaned, glassware accounted for, instruments powered down safely.')
   const [damageFlagged, setDamageFlagged] = useState(false)
   const [damageNotes, setDamageNotes] = useState('')
   const [submittingCheckOut, setSubmittingCheckOut] = useState(false)
@@ -71,6 +73,7 @@ export default function DayOfOpsConsolePage() {
         bookingId: checkInBooking.id,
         code,
         actualHeadcount,
+        initialConditionNotes,
         supervisingAdultName: checkInBooking.sponsor?.name || 'Adult Supervisor',
         supervisingAdultPhone: checkInBooking.sponsor?.phone || '9000000005',
       })
@@ -91,6 +94,7 @@ export default function DayOfOpsConsolePage() {
     try {
       await client.ops.checkOut({
         bookingId: checkOutBooking.id,
+        finalConditionNotes,
         damageFlagged,
         damageNotes: damageFlagged ? damageNotes : undefined,
       })
@@ -228,9 +232,14 @@ export default function DayOfOpsConsolePage() {
       {/* Check-in Modal */}
       {checkInBooking && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card border rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
+          <div className="bg-card border rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
             <div className="flex justify-between items-center border-b pb-3">
-              <h3 className="font-bold text-sm">Arrival Verification</h3>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">
+                  Lifecycle Step 7 of 10
+                </span>
+                <h3 className="font-bold text-sm mt-0.5">Arrival Verification & Initial Condition</h3>
+              </div>
               <button onClick={() => setCheckInBooking(null)} className="p-1 rounded hover:bg-muted">
                 <X className="w-4 h-4" />
               </button>
@@ -266,7 +275,40 @@ export default function DayOfOpsConsolePage() {
                 />
               </div>
 
-              <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border text-[11px] text-emerald-900 dark:text-emerald-300">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs font-semibold text-foreground">
+                    Initial Resource Condition Record
+                  </label>
+                  <span className="text-[10px] text-muted-foreground">Pre-session baseline</span>
+                </div>
+                <textarea
+                  rows={2}
+                  value={initialConditionNotes}
+                  onChange={(e) => setInitialConditionNotes(e.target.value)}
+                  placeholder="Record optical, electrical, and chemical bench baseline status..."
+                  className="w-full text-xs rounded-lg border bg-background p-2.5 font-sans"
+                  required
+                />
+                <div className="flex gap-1.5 mt-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setInitialConditionNotes('Pristine & Clean: All 24 microscope stations, reagents, and power supplies verified intact.')}
+                    className="text-[10px] px-2 py-0.5 rounded bg-muted hover:bg-muted/80 text-foreground font-medium"
+                  >
+                    ✓ Pristine
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInitialConditionNotes('Functional with minor wear: Station #3 microscope bulb dim, others normal.')}
+                    className="text-[10px] px-2 py-0.5 rounded bg-muted hover:bg-muted/80 text-foreground font-medium"
+                  >
+                    ⚠ Minor Prior Wear
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-300">
                 ✓ Supervising Teacher Adult verified present on premises.
               </div>
 
@@ -283,7 +325,7 @@ export default function DayOfOpsConsolePage() {
                   disabled={submittingCheckIn || code.length !== 6}
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow"
                 >
-                  {submittingCheckIn ? 'Confirming...' : 'Confirm Entry'}
+                  {submittingCheckIn ? 'Confirming...' : 'Confirm Entry (Step 7)'}
                 </button>
               </div>
             </form>
@@ -291,18 +333,49 @@ export default function DayOfOpsConsolePage() {
         </div>
       )}
 
-      {/* Check-out Modal with Damage Checklist */}
+      {/* Check-out Modal with Damage Checklist & Before/After Comparison */}
       {checkOutBooking && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card border rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+          <div className="bg-card border rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b pb-3">
-              <h3 className="font-bold text-sm">Post-Session Checkout Inspection</h3>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded">
+                  Lifecycle Step 8 & 9 of 10
+                </span>
+                <h3 className="font-bold text-sm mt-0.5">Return & Final Condition Inspection</h3>
+              </div>
               <button onClick={() => setCheckOutBooking(null)} className="p-1 rounded hover:bg-muted">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleCheckOutSubmit} className="space-y-4">
+              {/* Before Condition Display */}
+              <div className="p-3 rounded-lg bg-muted/40 border text-xs space-y-1">
+                <div className="font-bold text-[11px] text-muted-foreground uppercase tracking-wider">
+                  Initial Condition Recorded at Entry (Step 7 Baseline):
+                </div>
+                <div className="text-foreground italic">
+                  &ldquo;{checkOutBooking.initialConditionNotes || 'Pristine & Clean: All stations intact.'}&rdquo;
+                </div>
+              </div>
+
+              {/* Final Condition Input */}
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  Final Resource Condition on Return (Step 8)
+                </label>
+                <textarea
+                  rows={2}
+                  value={finalConditionNotes}
+                  onChange={(e) => setFinalConditionNotes(e.target.value)}
+                  placeholder="Record final condition of benches, chemicals, and equipment..."
+                  className="w-full text-xs rounded-lg border bg-background p-2.5 font-sans"
+                  required
+                />
+              </div>
+
+              {/* Damage & Incident Checklist */}
               <div className="space-y-2 text-xs">
                 <label className="flex items-center space-x-2 p-2.5 rounded-lg border bg-muted/20 cursor-pointer">
                   <input
@@ -311,7 +384,7 @@ export default function DayOfOpsConsolePage() {
                     onChange={(e) => setDamageFlagged(!e.target.checked)}
                     className="rounded text-primary focus:ring-primary"
                   />
-                  <span>All glassware, equipment, and lab stations returned in clean order.</span>
+                  <span>All glassware, equipment, and lab stations returned in clean, undamaged order.</span>
                 </label>
 
                 <label className="flex items-center space-x-2 p-2.5 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive cursor-pointer">
@@ -321,20 +394,24 @@ export default function DayOfOpsConsolePage() {
                     onChange={(e) => setDamageFlagged(e.target.checked)}
                     className="rounded text-destructive focus:ring-destructive"
                   />
-                  <span className="font-bold">Flag Equipment Damage or Protocol Violation</span>
+                  <span className="font-bold">Flag Equipment Damage, Delay, or Protocol Breach (Step 9)</span>
                 </label>
               </div>
 
               {damageFlagged && (
-                <div>
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 space-y-2">
+                  <div className="flex items-center space-x-1.5 text-destructive font-bold text-xs">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Incident / Damage Report Workflow Triggered</span>
+                  </div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
-                    Describe Damage or Incident Details
+                    Describe Damage or Incident Details:
                   </label>
                   <textarea
                     rows={3}
                     value={damageNotes}
                     onChange={(e) => setDamageNotes(e.target.value)}
-                    placeholder="Provide specific notes regarding damaged microscope, cracked beaker, etc."
+                    placeholder="Provide specific notes: e.g., Stage clip on Compound Microscope #4 bent during session. Auto-dispute will be routed to Admin Console for human resolution."
                     className="w-full text-xs rounded-lg border bg-background p-2.5"
                     required
                   />
@@ -355,10 +432,10 @@ export default function DayOfOpsConsolePage() {
                   className={`px-4 py-2 rounded-lg text-white text-xs font-bold shadow ${
                     damageFlagged
                       ? 'bg-amber-600 hover:bg-amber-700'
-                      : 'bg-emerald-600 hover:bg-emerald-700'
+                      : 'bg-blue-600 hover:bg-blue-700'
                   }`}
                 >
-                  {submittingCheckOut ? 'Processing...' : 'Complete Checkout'}
+                  {submittingCheckOut ? 'Processing...' : damageFlagged ? 'Record Incident & Checkout' : 'Complete Return (Step 8)'}
                 </button>
               </div>
             </form>

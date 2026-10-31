@@ -1,11 +1,9 @@
-# LabShare (लैबशेयर) – Rural School & Community Lab Network
+# LabShare India (लैबशेयर इंडिया) – Rural School & Community Lab Network
 
-[![CI](https://github.com/labshare/labshare/actions/workflows/ci.yml/badge.svg)](https://github.com/labshare/labshare)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14.2-black.svg)](https://nextjs.org/)
-[![NestJS 10](https://img.shields.io/badge/NestJS-10.3-red.svg)](https://nestjs.com/)
-[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
+> **🏆 Official Hackathon Project Submission & Evaluation Guide**  
+> **Live Deployed Product:** [https://rural-school-and-community-lab-netw.vercel.app](https://rural-school-and-community-lab-netw.vercel.app)  
+> **Source Code Repository:** [https://github.com/shivgupta272007-dotcom/Rural-School-and-Community-Lab-Network](https://github.com/shivgupta272007-dotcom/Rural-School-and-Community-Lab-Network)  
+> **Complete Hackathon Submission Document:** See **[`PROJECT_SUBMISSION.md`](PROJECT_SUBMISSION.md)** for exhaustive details on all 13 submission requirements and the 100/100 points criteria evaluation matrix.
 
 > **"Every science lab deserves curious students."**  
 > Well-equipped schools (Navodaya Vidyalayas, Kendriya Vidyalayas, elite private schools) have science labs, computer labs, and robotics workshops that sit empty after school hours, on weekends, and during holidays. Nearby rural schools and underfunded coaching circles have students who need them. **LabShare** safely connects them with first-class safety, cryptographic auditability, and transparent trust metrics.

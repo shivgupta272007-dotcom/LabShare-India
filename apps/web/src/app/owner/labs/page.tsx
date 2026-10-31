@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  X,
 } from 'lucide-react'
 import { useLanguage } from '../../../context/language-context'
 import { useAuth } from '../../../context/auth-context'
@@ -37,6 +38,43 @@ export default function OwnerLabsPage() {
   const [autoApproveScore, setAutoApproveScore] = useState(85)
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+
+  // List New Lab Modal State (Challenge Step 1)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [newLabName, setNewLabName] = useState('')
+  const [newLabType, setNewLabType] = useState('SCIENCE_LAB')
+  const [newLabCapacity, setNewLabCapacity] = useState(32)
+  const [newLabBuilding, setNewLabBuilding] = useState('Aryabhata Science Block')
+  const [newLabFloor, setNewLabFloor] = useState(1)
+  const [newLabDescription, setNewLabDescription] = useState('')
+  const [newLabPhotoUrl, setNewLabPhotoUrl] = useState('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80')
+  const [creatingLab, setCreatingLab] = useState(false)
+
+  const handleCreateLab = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newLabName) return
+    setCreatingLab(true)
+    try {
+      const created = await client.labs.create({
+        name: newLabName,
+        type: newLabType as any,
+        capacity: newLabCapacity,
+        buildingName: newLabBuilding,
+        floor: newLabFloor,
+        description: newLabDescription || 'Fully equipped laboratory space open for educational visits after hours.',
+        primaryPhotoUrl: newLabPhotoUrl,
+      } as any)
+      setShowCreateModal(false)
+      setNewLabName('')
+      setNewLabDescription('')
+      loadLabs()
+      if (created) setSelectedLab(created)
+    } catch (err: any) {
+      alert(`Failed to list laboratory: ${err.message}`)
+    } finally {
+      setCreatingLab(false)
+    }
+  }
 
   const loadLabs = () => {
     setLoading(true)
@@ -131,9 +169,18 @@ export default function OwnerLabsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Labs List */}
         <div className="space-y-4">
-          <h2 className="text-base font-bold text-foreground">
-            {locale === 'en' ? 'Your Institutional Labs' : 'आपकी प्रयोगशालाएं'}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-foreground">
+              {locale === 'en' ? 'Your Institutional Labs' : 'आपकी प्रयोगशालाएं'}
+            </h2>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-700 text-white font-bold text-xs flex items-center space-x-1 shadow-sm transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>{locale === 'en' ? 'List New Lab' : 'नई लैब जोड़ें'}</span>
+            </button>
+          </div>
 
           {loading ? (
             <div className="space-y-3">
@@ -336,6 +383,181 @@ export default function OwnerLabsPage() {
           </div>
         )}
       </div>
+
+      {/* List New Laboratory Modal (Challenge Lifecycle Step 1) */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="font-extrabold text-base text-foreground">
+                  {locale === 'en' ? 'List New Laboratory Resource' : 'नई प्रयोगशाला पंजीकृत करें'}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Lifecycle Step 1: Define resource space, safety rules, and operating conditions.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(false)}
+                className="p-1 rounded-md hover:bg-muted text-muted-foreground"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateLab} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  Laboratory / Resource Name
+                </label>
+                <input
+                  type="text"
+                  value={newLabName}
+                  onChange={(e) => setNewLabName(e.target.value)}
+                  placeholder="e.g., Dr. Vikram Sarabhai Space & Physics Lab"
+                  className="w-full text-xs rounded-lg border bg-background px-3 py-2 font-medium"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">
+                    Resource Category
+                  </label>
+                  <select
+                    value={newLabType}
+                    onChange={(e) => setNewLabType(e.target.value)}
+                    className="w-full text-xs rounded-lg border bg-background px-3 py-2 font-medium"
+                  >
+                    <option value="SCIENCE_LAB">Science Lab (Physics/Chemistry/Bio)</option>
+                    <option value="COMPUTER_LAB">Computer & AI Lab</option>
+                    <option value="WORKSHOP">Robotics / Tinkering Workshop</option>
+                    <option value="PROJECTOR_ROOM">Projector / STEM AV Room</option>
+                    <option value="LIBRARY">Science Reference Library</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">
+                    Student Capacity
+                  </label>
+                  <input
+                    type="number"
+                    min={5}
+                    max={60}
+                    value={newLabCapacity}
+                    onChange={(e) => setNewLabCapacity(parseInt(e.target.value, 10) || 30)}
+                    className="w-full text-xs font-mono rounded-lg border bg-background px-3 py-2"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">
+                    Building / Campus Wing
+                  </label>
+                  <input
+                    type="text"
+                    value={newLabBuilding}
+                    onChange={(e) => setNewLabBuilding(e.target.value)}
+                    placeholder="e.g., Aryabhata Block"
+                    className="w-full text-xs rounded-lg border bg-background px-3 py-2"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">
+                    Floor Level
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={5}
+                    value={newLabFloor}
+                    onChange={(e) => setNewLabFloor(parseInt(e.target.value, 10) || 1)}
+                    className="w-full text-xs font-mono rounded-lg border bg-background px-3 py-2"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  Equipment Description & Capabilities
+                </label>
+                <textarea
+                  rows={2}
+                  value={newLabDescription}
+                  onChange={(e) => setNewLabDescription(e.target.value)}
+                  placeholder="Describe optical benches, microscopes, computers, or tools available..."
+                  className="w-full text-xs rounded-lg border bg-background px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  Representative Photo URL
+                </label>
+                <input
+                  type="url"
+                  value={newLabPhotoUrl}
+                  onChange={(e) => setNewLabPhotoUrl(e.target.value)}
+                  className="w-full text-xs font-mono rounded-lg border bg-background px-3 py-2"
+                  required
+                />
+                <div className="flex gap-2 mt-1.5 overflow-x-auto text-[10px]">
+                  <button
+                    type="button"
+                    onClick={() => setNewLabPhotoUrl('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80')}
+                    className="text-primary hover:underline shrink-0"
+                  >
+                    Preset: Optics & Physics
+                  </button>
+                  <span>•</span>
+                  <button
+                    type="button"
+                    onClick={() => setNewLabPhotoUrl('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80')}
+                    className="text-primary hover:underline shrink-0"
+                  >
+                    Preset: Computer Lab
+                  </button>
+                  <span>•</span>
+                  <button
+                    type="button"
+                    onClick={() => setNewLabPhotoUrl('https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80')}
+                    className="text-primary hover:underline shrink-0"
+                  >
+                    Preset: Robotics
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 border rounded-lg text-xs font-semibold hover:bg-muted"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingLab || !newLabName}
+                  className="px-5 py-2 bg-primary hover:bg-primary-700 disabled:opacity-50 text-white font-bold text-xs rounded-lg shadow flex items-center space-x-1.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>{creatingLab ? 'Listing...' : 'List Resource & Configure Rules'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

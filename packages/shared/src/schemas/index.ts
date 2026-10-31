@@ -185,25 +185,27 @@ export const sponsorVouchSchema = z.object({
 })
 
 export const bookingActionSchema = z.object({
-  action: z.enum(['APPROVE', 'REJECT', 'REQUEST_CHANGES', 'CANCEL']),
+  action: z.enum(['APPROVE', 'REJECT', 'WAITLIST', 'REQUEST_CHANGES', 'CANCEL']),
   note: z.string().max(1000).optional(),
   reason: z.string().max(500).optional(),
   version: z.number().int(),
 })
 
 export const checkInSchema = z.object({
-  bookingId: z.string().uuid(),
-  method: z.enum(['OTP', 'QR', 'MANUAL']),
+  bookingId: z.string(),
+  method: z.enum(['OTP', 'QR', 'MANUAL']).default('OTP'),
   code: z.string().optional(),
   actualHeadcount: z.number().int().min(1),
   supervisingAdultName: z.string().min(2),
   supervisingAdultPhone: z.string().regex(/^[6-9]\d{9}$/),
+  initialConditionNotes: z.string().max(1000).optional(),
 })
 
 export const checkOutSchema = z.object({
-  bookingId: z.string().uuid(),
+  bookingId: z.string(),
   damageFlagged: z.boolean(),
   damageNotes: z.string().max(1000).optional(),
+  finalConditionNotes: z.string().max(1000).optional(),
 })
 
 // ──────────────────────────────────────────────────────────

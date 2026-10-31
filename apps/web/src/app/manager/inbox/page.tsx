@@ -31,7 +31,7 @@ export default function ManagerInboxPage() {
   const [loading, setLoading] = useState(true)
   const [actionBooking, setActionBooking] = useState<{
     booking: Booking
-    action: 'APPROVE' | 'REJECT' | 'REQUEST_CHANGES'
+    action: 'APPROVE' | 'WAITLIST' | 'REJECT' | 'REQUEST_CHANGES'
   } | null>(null)
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -80,6 +80,7 @@ export default function ManagerInboxPage() {
   }
 
   const pendingRequests = bookings.filter((b) => b.status === 'PENDING_MANAGER')
+  const waitlistedRequests = bookings.filter((b) => b.status === 'WAITLISTED')
   const approvedRequests = bookings.filter((b) => b.status === 'APPROVED' || b.status === 'CHECKED_IN')
 
   return (
@@ -102,7 +103,7 @@ export default function ManagerInboxPage() {
       </div>
 
       {/* Tabs / Counters */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-card border rounded-xl p-4 shadow-sm">
           <div className="text-xs text-muted-foreground font-medium">Pending Review</div>
           <div className="text-2xl font-extrabold text-amber-600 mt-1">
@@ -110,7 +111,13 @@ export default function ManagerInboxPage() {
           </div>
         </div>
         <div className="bg-card border rounded-xl p-4 shadow-sm">
-          <div className="text-xs text-muted-foreground font-medium">Approved / Upcoming</div>
+          <div className="text-xs text-muted-foreground font-medium">Waitlisted Queue</div>
+          <div className="text-2xl font-extrabold text-blue-600 mt-1">
+            {waitlistedRequests.length}
+          </div>
+        </div>
+        <div className="bg-card border rounded-xl p-4 shadow-sm">
+          <div className="text-xs text-muted-foreground font-medium">Approved / Docket</div>
           <div className="text-2xl font-extrabold text-emerald-600 mt-1">
             {approvedRequests.length}
           </div>
@@ -197,25 +204,33 @@ export default function ManagerInboxPage() {
                 <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2 border-t w-full">
                   <button
                     onClick={() => setActionBooking({ booking: b, action: 'REJECT' })}
-                    className="px-3.5 py-2 rounded-lg border text-xs font-bold text-destructive hover:bg-destructive/10 transition-colors flex items-center justify-center space-x-1"
+                    className="px-3 py-1.5 rounded-lg border text-xs font-bold text-destructive hover:bg-destructive/10 transition-colors flex items-center justify-center space-x-1"
                   >
-                    <XCircle className="w-4 h-4" />
+                    <XCircle className="w-3.5 h-3.5" />
                     <span>Reject</span>
                   </button>
 
                   <button
-                    onClick={() => setActionBooking({ booking: b, action: 'REQUEST_CHANGES' })}
-                    className="px-3.5 py-2 rounded-lg border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center justify-center space-x-1"
+                    onClick={() => setActionBooking({ booking: b, action: 'WAITLIST' })}
+                    className="px-3 py-1.5 rounded-lg border border-blue-300 dark:border-blue-800 text-xs font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors flex items-center justify-center space-x-1"
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <Clock className="w-3.5 h-3.5 text-blue-500" />
+                    <span>Waitlist Queue</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActionBooking({ booking: b, action: 'REQUEST_CHANGES' })}
+                    className="px-3 py-1.5 rounded-lg border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center justify-center space-x-1"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
                     <span>Request Changes</span>
                   </button>
 
                   <button
                     onClick={() => setActionBooking({ booking: b, action: 'APPROVE' })}
-                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center justify-center space-x-1 shadow-sm"
+                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center justify-center space-x-1 shadow-sm"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Approve Request</span>
                   </button>
                 </div>
@@ -233,6 +248,8 @@ export default function ManagerInboxPage() {
               <h3 className="font-bold text-sm">
                 {actionBooking.action === 'APPROVE'
                   ? 'Confirm Lab Booking Approval'
+                  : actionBooking.action === 'WAITLIST'
+                  ? 'Place Request on Waiting List (Fair Quota)'
                   : actionBooking.action === 'REJECT'
                   ? 'Reject Booking Request'
                   : 'Request Modification from Teacher Sponsor'}
@@ -254,6 +271,8 @@ export default function ManagerInboxPage() {
                 <label className="block text-xs font-semibold text-foreground mb-1">
                   {actionBooking.action === 'APPROVE'
                     ? 'Manager Confirmation Note (Optional)'
+                    : actionBooking.action === 'WAITLIST'
+                    ? 'Waitlist Notification Note to School'
                     : 'Reason / Instruction to Visiting School'}
                 </label>
                 <textarea
@@ -263,10 +282,12 @@ export default function ManagerInboxPage() {
                   placeholder={
                     actionBooking.action === 'APPROVE'
                       ? 'e.g., Lab assistant will be present. Please ensure student lab aprons.'
+                      : actionBooking.action === 'WAITLIST'
+                      ? 'e.g., Slot is in high demand. Placed at Queue Position #1.'
                       : 'Provide clear explanation...'
                   }
                   className="w-full text-xs rounded-lg border bg-background px-3 py-2"
-                  required={actionBooking.action !== 'APPROVE'}
+                  required={actionBooking.action === 'REJECT'}
                 />
               </div>
 
@@ -284,6 +305,8 @@ export default function ManagerInboxPage() {
                   className={`px-4 py-2 rounded-lg text-white text-xs font-bold shadow ${
                     actionBooking.action === 'APPROVE'
                       ? 'bg-emerald-600 hover:bg-emerald-700'
+                      : actionBooking.action === 'WAITLIST'
+                      ? 'bg-blue-600 hover:bg-blue-700'
                       : actionBooking.action === 'REJECT'
                       ? 'bg-destructive hover:bg-destructive/90'
                       : 'bg-primary hover:bg-primary-700'

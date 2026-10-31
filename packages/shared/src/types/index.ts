@@ -39,6 +39,7 @@ export type BookingStatus =
   | 'AUTO_REJECTED'
   | 'PENDING_MANAGER'
   | 'APPROVED'
+  | 'WAITLISTED'
   | 'REJECTED'
   | 'CHANGES_REQUESTED'
   | 'EXPIRED'
@@ -307,12 +308,17 @@ export interface Booking {
   // Rules engine output
   rulesDecision?: RulesDecision
 
-  // Check-in/out
+  // Check-in/out & Condition Reporting
   checkInCode?: string
   checkInAt?: string
   checkOutAt?: string
   actualHeadcount?: number
   supervisionAdultConfirmed?: boolean
+  initialConditionNotes?: string
+  finalConditionNotes?: string
+  damageFlagged?: boolean
+  damageNotes?: string
+  waitlistPosition?: number
 
   // Manager
   managerId?: string
