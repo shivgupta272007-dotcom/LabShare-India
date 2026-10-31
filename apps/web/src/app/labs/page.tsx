@@ -298,8 +298,8 @@ export default function LabsSearchPage() {
       ) : viewMode === 'split' ? (
         /* Split View: Map + Cards side-by-side or stacked */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Interactive Map (5 Cols on Desktop) */}
-          <div className="lg:col-span-5 order-2 lg:order-1 sticky top-20">
+          {/* Interactive Map (Sticky on Desktop, Natural on Mobile) */}
+          <div className="lg:col-span-5 order-2 lg:order-1 lg:sticky lg:top-20 w-full">
             <InteractiveMap
               labs={labs}
               centerLat={activeLat}
@@ -308,7 +308,7 @@ export default function LabsSearchPage() {
               userLng={userGpsCoords?.lng}
               selectedLabId={selectedLabId}
               onSelectLab={(l) => setSelectedLabId(l.id)}
-              height="580px"
+              height="420px"
               locale={locale}
             />
           </div>
@@ -351,7 +351,7 @@ export default function LabsSearchPage() {
         /* Grid View: 3-Column Cards */
         <div>
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
@@ -368,7 +368,7 @@ export default function LabsSearchPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {labs.map((lab) => (
                 <LabCard
                   key={lab.id}

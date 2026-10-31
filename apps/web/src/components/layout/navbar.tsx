@@ -104,21 +104,21 @@ export function Navbar() {
 
       <div className="container flex h-16 items-center justify-between">
         {/* Official Brand Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="bg-white rounded-xl px-2.5 py-1 shadow-xs border border-slate-200/90 flex items-center justify-center transition-all group-hover:shadow-md group-hover:scale-[1.02]">
+        <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group shrink-0">
+          <div className="bg-white rounded-xl px-2 sm:px-2.5 py-1 shadow-xs border border-slate-200/90 flex items-center justify-center transition-all group-hover:shadow-md group-hover:scale-[1.02]">
             <img
               src="/logo.png"
               alt="LabShare India | लैबशेयर इंडिया - हर लैब, हर बच्चे के लिए"
-              className="h-10 sm:h-11 w-auto object-contain"
+              className="h-8 sm:h-10 md:h-11 w-auto object-contain"
             />
           </div>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-1 text-sm font-medium">
+        {/* Desktop Navigation Links (Responsive Tablet md -> Laptop lg) */}
+        <nav className="hidden md:flex items-center space-x-0.5 lg:space-x-1 text-xs lg:text-sm font-medium">
           <Link
             href="/labs"
-            className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+            className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
               pathname === '/labs' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
             }`}
           >
@@ -128,7 +128,7 @@ export function Navbar() {
           {role === 'TEACHER_SPONSOR' && (
             <Link
               href="/bookings"
-              className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+              className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
                 pathname === '/bookings' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
               }`}
             >
@@ -140,22 +140,22 @@ export function Navbar() {
             <>
               <Link
                 href="/manager/inbox"
-                className={`px-3 py-2 rounded-md transition-colors hover:bg-muted relative ${
+                className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted relative ${
                   pathname === '/manager/inbox' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
                 }`}
               >
-                <span>{locale === 'en' ? 'Request Inbox' : 'अनुरोध इनबॉक्स'}</span>
-                <span className="ml-1.5 px-1.5 py-0.2 bg-amber-500 text-amber-950 font-bold text-[10px] rounded-full">
+                <span>{locale === 'en' ? 'Inbox' : 'इनबॉक्स'}</span>
+                <span className="ml-1 px-1.5 py-0.2 bg-amber-500 text-amber-950 font-bold text-[10px] rounded-full">
                   1
                 </span>
               </Link>
               <Link
                 href="/manager/schedule"
-                className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+                className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
                   pathname === '/manager/schedule' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
                 }`}
               >
-                {locale === 'en' ? "Today's Check-in" : 'आज का चेक-इन'}
+                {locale === 'en' ? "Today's Ops" : 'आज का चेक-इन'}
               </Link>
             </>
           )}
@@ -163,11 +163,11 @@ export function Navbar() {
           {role === 'OWNER_SCHOOL' && (
             <Link
               href="/owner/labs"
-              className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+              className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
                 pathname === '/owner/labs' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
               }`}
             >
-              {locale === 'en' ? 'My Labs & Rules' : 'मेरी लैब एवं नियम'}
+              {locale === 'en' ? 'Labs & Rules' : 'लैब एवं नियम'}
             </Link>
           )}
 
@@ -175,34 +175,34 @@ export function Navbar() {
             <>
               <Link
                 href="/admin/audit"
-                className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+                className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
                   pathname === '/admin/audit' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
                 }`}
               >
-                {locale === 'en' ? 'Audit Chain' : 'ऑडिट लेजर'}
+                {locale === 'en' ? 'Audit' : 'ऑडिट'}
               </Link>
               <Link
                 href="/admin/verification"
-                className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+                className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
                   pathname === '/admin/verification' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
                 }`}
               >
-                {locale === 'en' ? 'Verification' : 'संस्था सत्यापन'}
+                {locale === 'en' ? 'Verify' : 'सत्यापन'}
               </Link>
               <Link
                 href="/admin/disputes"
-                className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+                className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
                   pathname === '/admin/disputes' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
                 }`}
               >
-                {locale === 'en' ? 'Disputes' : 'विवाद ट्रिब्यूनल'}
+                {locale === 'en' ? 'Disputes' : 'विवाद'}
               </Link>
             </>
           )}
 
           <Link
             href="/impact"
-            className={`px-3 py-2 rounded-md transition-colors hover:bg-muted ${
+            className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-md transition-colors hover:bg-muted ${
               pathname === '/impact' ? 'text-primary font-bold bg-muted/60' : 'text-foreground/80'
             }`}
           >
@@ -251,37 +251,148 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (Touch-Optimized for Phones & Tablets) */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b bg-card px-4 py-3 space-y-2">
-          <Link
-            href="/labs"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium hover:text-primary"
-          >
-            {t('nav.labs')}
-          </Link>
-          <Link
-            href="/bookings"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium hover:text-primary"
-          >
-            {t('nav.bookings')}
-          </Link>
-          <Link
-            href="/manager/inbox"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium hover:text-primary"
-          >
-            {locale === 'en' ? 'Manager Inbox' : 'प्रबंधक इनबॉक्स'}
-          </Link>
-          <Link
-            href="/impact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium hover:text-primary"
-          >
-            {locale === 'en' ? 'Impact Dashboard' : 'प्रभाव डैशबोर्ड'}
-          </Link>
+        <div className="md:hidden border-b bg-card/98 backdrop-blur-lg px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200 shadow-xl">
+          {/* Active Persona Banner on Mobile */}
+          <div className="p-2.5 rounded-xl bg-muted/60 border flex items-center justify-between text-xs">
+            <span className="text-muted-foreground font-medium">
+              {locale === 'en' ? 'Active Persona:' : 'सक्रिय भूमिका:'}
+            </span>
+            <span className={`font-bold px-2 py-0.5 rounded-full text-[11px] ${roleLabels[role]?.color}`}>
+              {roleLabels[role]?.[locale]}
+            </span>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="space-y-1">
+            <Link
+              href="/labs"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                pathname === '/labs' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+              }`}
+            >
+              {t('nav.labs')}
+            </Link>
+
+            {role === 'TEACHER_SPONSOR' && (
+              <Link
+                href="/bookings"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  pathname === '/bookings' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                }`}
+              >
+                {t('nav.bookings')}
+              </Link>
+            )}
+
+            {role === 'MANAGER' && (
+              <>
+                <Link
+                  href="/manager/inbox"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    pathname === '/manager/inbox' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                  }`}
+                >
+                  <span>{locale === 'en' ? 'Request Inbox' : 'अनुरोध इनबॉक्स'}</span>
+                  <span className="px-2 py-0.5 bg-amber-500 text-amber-950 font-bold text-xs rounded-full">
+                    1 Pending
+                  </span>
+                </Link>
+                <Link
+                  href="/manager/schedule"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    pathname === '/manager/schedule' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                  }`}
+                >
+                  {locale === 'en' ? "Today's Check-in Console" : 'आज का चेक-इन कंसोल'}
+                </Link>
+              </>
+            )}
+
+            {role === 'OWNER_SCHOOL' && (
+              <Link
+                href="/owner/labs"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  pathname === '/owner/labs' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                }`}
+              >
+                {locale === 'en' ? 'My Labs & Sharing Rules' : 'मेरी लैब एवं साझा नियम'}
+              </Link>
+            )}
+
+            {role === 'ADMIN' && (
+              <>
+                <Link
+                  href="/admin/audit"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    pathname === '/admin/audit' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                  }`}
+                >
+                  {locale === 'en' ? 'Cryptographic Audit Chain' : 'ऑडिट लेजर'}
+                </Link>
+                <Link
+                  href="/admin/verification"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    pathname === '/admin/verification' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                  }`}
+                >
+                  {locale === 'en' ? 'Institution Verification Queue' : 'संस्था सत्यापन सूची'}
+                </Link>
+                <Link
+                  href="/admin/disputes"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    pathname === '/admin/disputes' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+                  }`}
+                >
+                  {locale === 'en' ? 'Dispute Tribunal' : 'विवाद ट्रिब्यूनल'}
+                </Link>
+              </>
+            )}
+
+            <Link
+              href="/impact"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                pathname === '/impact' ? 'bg-primary text-white' : 'hover:bg-muted text-foreground'
+              }`}
+            >
+              {locale === 'en' ? 'Impact & Telemetry' : 'प्रभाव एवं आंकड़े'}
+            </Link>
+          </div>
+
+          {/* Quick Mobile Role Switcher */}
+          <div className="pt-2 border-t">
+            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+              {locale === 'en' ? 'Quick Switch Role:' : 'भूमिका बदलें:'}
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {(Object.keys(roleLabels) as UserRole[]).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => {
+                    switchRole(r)
+                    setMobileMenuOpen(false)
+                  }}
+                  className={`p-2 rounded-lg text-left text-xs font-semibold border transition-all ${
+                    role === r
+                      ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'border-border bg-card hover:bg-muted text-muted-foreground'
+                  }`}
+                >
+                  {roleLabels[r][locale]}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </header>

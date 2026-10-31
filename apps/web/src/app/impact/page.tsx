@@ -103,7 +103,7 @@ export default function ImpactDashboardPage() {
       </div>
 
       {/* Hero 4-Stat Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div className="bg-card border rounded-2xl p-6 shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
@@ -217,7 +217,7 @@ export default function ImpactDashboardPage() {
           </h2>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto touch-pan-x overscroll-x-contain">
           <table className="w-full text-left text-xs">
             <thead className="bg-muted/50 border-b text-[11px] font-bold text-muted-foreground uppercase">
               <tr>

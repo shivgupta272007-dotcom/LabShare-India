@@ -53,8 +53,8 @@ export function GoogleMapEmbed({
   return (
     <div className={`flex flex-col rounded-xl overflow-hidden border bg-card shadow-sm ${className}`}>
       {/* Map Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50 border-b text-xs">
-        <div className="flex items-center space-x-2 truncate">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-4 py-2.5 bg-muted/50 border-b gap-2 text-xs">
+        <div className="flex items-center space-x-2 truncate w-full sm:w-auto">
           <MapPin className="w-4 h-4 text-primary shrink-0" />
           <span className="font-bold text-foreground truncate">{title}</span>
           {distanceKm !== undefined && (
@@ -64,7 +64,7 @@ export function GoogleMapEmbed({
           )}
         </div>
 
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-2 shrink-0 self-end sm:self-auto">
           {/* Satellite vs Roadmap Toggle */}
           <div className="flex rounded-md border bg-background p-0.5 text-[11px] font-medium">
             <button

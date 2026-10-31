@@ -73,20 +73,22 @@ export function PhotoGallery({ lab, className = '', locale = 'en' }: PhotoGaller
           <Expand className="w-4 h-4" />
         </button>
 
-        {/* Prev / Next Arrows */}
+        {/* Prev / Next Arrows (Always visible on touch mobile, hover on desktop) */}
         {photos.length > 1 && (
           <>
             <button
               type="button"
               onClick={prevPhoto}
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md transition-all opacity-0 group-hover:opacity-100 z-10"
+              className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-2.5 sm:p-2 rounded-full bg-black/55 hover:bg-black/80 text-white backdrop-blur-md transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10 shadow-md"
+              aria-label="Previous Photo"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               type="button"
               onClick={nextPhoto}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md transition-all opacity-0 group-hover:opacity-100 z-10"
+              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2.5 sm:p-2 rounded-full bg-black/55 hover:bg-black/80 text-white backdrop-blur-md transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-10 shadow-md"
+              aria-label="Next Photo"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

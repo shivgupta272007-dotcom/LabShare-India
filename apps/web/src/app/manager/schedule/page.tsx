@@ -43,6 +43,12 @@ export default function DayOfOpsConsolePage() {
   const [damageNotes, setDamageNotes] = useState('')
   const [submittingCheckOut, setSubmittingCheckOut] = useState(false)
 
+  const formatDisplayTime = (timeStr?: string) => {
+    if (!timeStr) return ''
+    if (timeStr.includes('T')) return timeStr.substring(11, 16)
+    return timeStr.substring(0, 5)
+  }
+
   const loadSchedule = () => {
     setLoading(true)
     client.ops
@@ -119,7 +125,7 @@ export default function DayOfOpsConsolePage() {
       </div>
 
       {/* KPI Counters */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-card border rounded-xl p-4 shadow-sm text-center">
           <div className="text-xs text-muted-foreground">Total Today</div>
           <div className="text-2xl font-extrabold text-foreground mt-1">
@@ -178,17 +184,17 @@ export default function DayOfOpsConsolePage() {
                   </div>
 
                   <div className="text-xs text-muted-foreground">
-                    Lab: <strong>{b.lab?.name}</strong> • Time: {b.startTime.substring(11, 16)} - {b.endTime.substring(11, 16)}
+                    Lab: <strong>{b.lab?.name}</strong> • Time: {formatDisplayTime(b.startTime)} - {formatDisplayTime(b.endTime)}
                   </div>
 
-                  <div className="text-xs text-muted-foreground flex items-center space-x-4">
+                  <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1">
                     <span>Expected Headcount: {b.headcount}</span>
                     {b.actualHeadcount && <span>Actual Headcount: {b.actualHeadcount}</span>}
                     {b.checkInAt && <span>Checked in at: {new Date(b.checkInAt).toLocaleTimeString()}</span>}
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 w-full sm:w-auto justify-start sm:justify-end pt-2 sm:pt-0 border-t sm:border-t-0">
                   {b.status === 'APPROVED' && (
                     <button
                       onClick={() => {

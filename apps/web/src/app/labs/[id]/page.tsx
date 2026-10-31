@@ -85,7 +85,7 @@ export default function LabDetailPage() {
   const rules = lab.currentRules
 
   return (
-    <div className="container py-8 max-w-5xl flex flex-col gap-8">
+    <div className="container py-6 sm:py-8 pb-24 lg:pb-8 max-w-5xl flex flex-col gap-6 sm:gap-8">
       {/* Breadcrumb */}
       <div className="flex items-center space-x-2 text-xs text-muted-foreground">
         <Link href="/labs" className="hover:text-primary">
@@ -331,6 +331,25 @@ export default function LabDetailPage() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Sticky Booking Bar (Phone & Tablet) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-background/95 backdrop-blur-md border-t z-40 flex items-center justify-between shadow-2xl">
+        <div>
+          <div className="text-[11px] text-muted-foreground font-medium">Max {lab.capacity} Students</div>
+          <div className="text-xs font-bold text-primary flex items-center space-x-1">
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 inline" />
+            <span>{lab.averageRating || 4.9}</span>
+            <span className="text-muted-foreground font-normal">• {lab.trustScore}/100 Trust</span>
+          </div>
+        </div>
+        <Link
+          href={`/labs/${lab.id}/book?date=${selectedDate}`}
+          className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-700 text-white font-bold text-xs shadow-md transition-all flex items-center space-x-1.5"
+        >
+          <span>{locale === 'en' ? 'Book Lab' : 'लैब बुक करें'}</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
     </div>
   )

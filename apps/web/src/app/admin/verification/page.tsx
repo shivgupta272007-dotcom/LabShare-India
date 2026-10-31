@@ -121,7 +121,7 @@ export default function AdminVerificationPage() {
                 )}
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end pt-2 sm:pt-0 border-t sm:border-t-0">
                 {org.verificationStatus !== 'VERIFIED' && !org.isSuspended && (
                   <>
                     <button

@@ -84,7 +84,7 @@ export default function AdminDisputesPage() {
               key={d.id}
               className="bg-card border rounded-xl p-5 shadow-sm space-y-4"
             >
-              <div className="flex justify-between items-start border-b pb-3">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
                 <div>
                   <div className="flex items-center space-x-2">
                     <span

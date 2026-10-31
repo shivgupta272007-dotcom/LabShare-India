@@ -61,6 +61,12 @@ export default function MyBookingsPage() {
     }
   }
 
+  const formatDisplayTime = (timeStr?: string) => {
+    if (!timeStr) return ''
+    if (timeStr.includes('T')) return timeStr.substring(11, 16)
+    return timeStr.substring(0, 5)
+  }
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'APPROVED':
@@ -142,7 +148,7 @@ export default function MyBookingsPage() {
                   <div className="flex items-center space-x-1">
                     <Clock className="w-3.5 h-3.5" />
                     <span>
-                      {b.startTime.substring(11, 16)} - {b.endTime.substring(11, 16)}
+                      {formatDisplayTime(b.startTime)} - {formatDisplayTime(b.endTime)}
                     </span>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -160,7 +166,7 @@ export default function MyBookingsPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end pt-2 sm:pt-0 border-t sm:border-t-0">
                 {b.status === 'APPROVED' && (
                   <button
                     onClick={() => setSelectedQrBooking(b)}

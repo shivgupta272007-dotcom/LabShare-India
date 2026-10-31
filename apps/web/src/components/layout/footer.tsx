@@ -11,7 +11,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-card text-card-foreground mt-auto">
       <div className="container py-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           <div className="space-y-3">
             <Link href="/" className="inline-block group">
               <div className="bg-white rounded-xl px-2.5 py-1.5 shadow-xs border border-slate-200/90 inline-flex items-center transition-all group-hover:shadow-md">

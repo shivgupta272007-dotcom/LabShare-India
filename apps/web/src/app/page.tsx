@@ -199,35 +199,35 @@ export default function HomePage() {
               </div>
 
               {/* Floating Badge 1 (Top Left): Verified Adults */}
-              <div className="absolute -top-3 -left-3 z-20 animate-float bg-card/95 backdrop-blur-md border border-border rounded-xl px-3 py-2 shadow-lg flex items-center space-x-2">
-                <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600">
-                  <ShieldCheck className="w-4 h-4" />
+              <div className="absolute top-2 left-2 sm:-top-3 sm:-left-3 z-20 animate-float bg-card/95 backdrop-blur-md border border-border rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-lg flex items-center space-x-2">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 shrink-0">
+                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Teacher Vouched</div>
-                  <div className="text-xs font-bold text-foreground">100% Supervised</div>
+                  <div className="text-[9px] sm:text-[10px] text-muted-foreground font-semibold">Teacher Vouched</div>
+                  <div className="text-[11px] sm:text-xs font-bold text-foreground">100% Supervised</div>
                 </div>
               </div>
 
               {/* Floating Badge 2 (Top Right): Google Maps */}
-              <div className="absolute -top-3 -right-3 z-20 animate-float-slow bg-card/95 backdrop-blur-md border border-border rounded-xl px-3 py-2 shadow-lg flex items-center space-x-2">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                  <Navigation className="w-4 h-4" />
+              <div className="absolute top-2 right-2 sm:-top-3 sm:-right-3 z-20 animate-float-slow bg-card/95 backdrop-blur-md border border-border rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-lg flex items-center space-x-2">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <Navigation className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Navigation</div>
-                  <div className="text-xs font-bold text-foreground">Google Maps GPS</div>
+                  <div className="text-[9px] sm:text-[10px] text-muted-foreground font-semibold">Navigation</div>
+                  <div className="text-[11px] sm:text-xs font-bold text-foreground">Google Maps GPS</div>
                 </div>
               </div>
 
               {/* Floating Badge 3 (Bottom Right): Trust Score */}
-              <div className="absolute bottom-16 -right-3 z-20 animate-float bg-card/95 backdrop-blur-md border border-border rounded-xl px-3 py-2 shadow-lg flex items-center space-x-2">
-                <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 flex items-center justify-center text-amber-500">
-                  <Star className="w-4 h-4 fill-amber-500" />
+              <div className="absolute bottom-16 right-2 sm:-right-3 z-20 animate-float bg-card/95 backdrop-blur-md border border-border rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-lg flex items-center space-x-2">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-100 dark:bg-amber-950 flex items-center justify-center text-amber-500 shrink-0">
+                  <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-500" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Verified Trust</div>
-                  <div className="text-xs font-bold text-foreground">98/100 Rating</div>
+                  <div className="text-[9px] sm:text-[10px] text-muted-foreground font-semibold">Verified Trust</div>
+                  <div className="text-[11px] sm:text-xs font-bold text-foreground">98/100 Rating</div>
                 </div>
               </div>
             </div>
@@ -324,8 +324,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-card border rounded-lg p-5 relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="bg-card border rounded-xl p-5 relative shadow-xs">
             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center mb-3">
               1
             </div>
@@ -450,7 +450,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {featuredLabs.map((lab) => {
             const photoUrl =
               lab.photos?.[0]?.url ||

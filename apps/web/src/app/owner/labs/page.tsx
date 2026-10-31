@@ -228,7 +228,7 @@ export default function OwnerLabsPage() {
               </div>
 
               {/* Time Window */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
                     Allowed Start Time
@@ -254,7 +254,7 @@ export default function OwnerLabsPage() {
               </div>
 
               {/* Headcount & Grade Limits */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
                     Max Student Group Size

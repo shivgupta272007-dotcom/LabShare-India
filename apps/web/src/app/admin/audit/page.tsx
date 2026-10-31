@@ -79,11 +79,11 @@ export default function AdminAuditPage() {
         </div>
 
         {/* Verification Trigger Button */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 w-full sm:w-auto">
           <button
             onClick={handleVerifyChain}
             disabled={verifying}
-            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center space-x-1.5 transition-all"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center justify-center space-x-1.5 transition-all"
           >
             {verifying ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -140,7 +140,7 @@ export default function AdminAuditPage() {
 
           <div className="flex items-center space-x-2 text-xs">
             <a
-              href="http://localhost:3001/api/v1/admin/audit/export?format=csv"
+              href="/api/v1/admin/audit/export?format=csv"
               target="_blank"
               rel="noreferrer"
               className="px-2.5 py-1 rounded border bg-background hover:bg-muted font-medium flex items-center space-x-1"
@@ -149,7 +149,7 @@ export default function AdminAuditPage() {
               <span>CSV</span>
             </a>
             <a
-              href="http://localhost:3001/api/v1/admin/audit/export?format=json"
+              href="/api/v1/admin/audit/export?format=json"
               target="_blank"
               rel="noreferrer"
               className="px-2.5 py-1 rounded border bg-background hover:bg-muted font-medium flex items-center space-x-1"
@@ -165,7 +165,7 @@ export default function AdminAuditPage() {
             Loading ledger...
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto touch-pan-x overscroll-x-contain">
             <table className="w-full text-left text-xs">
               <thead className="bg-muted/50 border-b text-[11px] font-bold text-muted-foreground uppercase">
                 <tr>

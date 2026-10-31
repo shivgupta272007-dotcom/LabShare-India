@@ -36,6 +36,12 @@ export default function ManagerInboxPage() {
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  const formatDisplayTime = (timeStr?: string) => {
+    if (!timeStr) return ''
+    if (timeStr.includes('T')) return timeStr.substring(11, 16)
+    return timeStr.substring(0, 5)
+  }
+
   const loadRequests = () => {
     setLoading(true)
     client.bookings
@@ -96,7 +102,7 @@ export default function ManagerInboxPage() {
       </div>
 
       {/* Tabs / Counters */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-card border rounded-xl p-4 shadow-sm">
           <div className="text-xs text-muted-foreground font-medium">Pending Review</div>
           <div className="text-2xl font-extrabold text-amber-600 mt-1">
@@ -109,7 +115,7 @@ export default function ManagerInboxPage() {
             {approvedRequests.length}
           </div>
         </div>
-        <div className="bg-card border rounded-xl p-4 shadow-sm col-span-2 sm:col-span-1">
+        <div className="bg-card border rounded-xl p-4 shadow-sm">
           <div className="text-xs text-muted-foreground font-medium">Host Institution</div>
           <div className="text-sm font-bold text-foreground mt-1 truncate">
             Jawahar Navodaya Vidyalaya
@@ -152,7 +158,7 @@ export default function ManagerInboxPage() {
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      Requested: <strong>{b.lab?.name}</strong> • {b.date} ({b.startTime.substring(11, 16)} - {b.endTime.substring(11, 16)})
+                      Requested: <strong>{b.lab?.name}</strong> • {b.date} ({formatDisplayTime(b.startTime)} - {formatDisplayTime(b.endTime)})
                     </div>
                   </div>
 
@@ -188,10 +194,10 @@ export default function ManagerInboxPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-end gap-2 pt-2 border-t">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2 border-t w-full">
                   <button
                     onClick={() => setActionBooking({ booking: b, action: 'REJECT' })}
-                    className="px-3.5 py-2 rounded-lg border text-xs font-bold text-destructive hover:bg-destructive/10 transition-colors flex items-center space-x-1"
+                    className="px-3.5 py-2 rounded-lg border text-xs font-bold text-destructive hover:bg-destructive/10 transition-colors flex items-center justify-center space-x-1"
                   >
                     <XCircle className="w-4 h-4" />
                     <span>Reject</span>
@@ -199,7 +205,7 @@ export default function ManagerInboxPage() {
 
                   <button
                     onClick={() => setActionBooking({ booking: b, action: 'REQUEST_CHANGES' })}
-                    className="px-3.5 py-2 rounded-lg border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center space-x-1"
+                    className="px-3.5 py-2 rounded-lg border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center justify-center space-x-1"
                   >
                     <MessageSquare className="w-4 h-4" />
                     <span>Request Changes</span>
@@ -207,7 +213,7 @@ export default function ManagerInboxPage() {
 
                   <button
                     onClick={() => setActionBooking({ booking: b, action: 'APPROVE' })}
-                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center space-x-1 shadow-sm"
+                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center justify-center space-x-1 shadow-sm"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Approve Request</span>
