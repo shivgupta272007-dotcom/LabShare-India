@@ -164,7 +164,7 @@ Judges do not need to create accounts or enter passwords. The platform includes 
 ---
 
 ## 12. Team & Participant Details
-- **Team Name:** LabShare Innovators
+- **Team Name:** Hackblaze
 - **Team Size:** 4 Members (1 Team Leader, 3 Team Members)
 - **Institution:** G.L. Bajaj Institute Of Technology And Management
 
