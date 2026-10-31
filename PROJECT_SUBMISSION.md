@@ -166,36 +166,39 @@ Judges do not need to create accounts or enter passwords. The platform includes 
 ## 12. Team & Participant Details
 - **Team Name:** LabShare Innovators
 - **Team Size:** 4 Members (1 Team Leader, 3 Team Members)
+- **Institution:** G.L. Bajaj Institute Of Technology And Management
 
 ### Member Roles & Contributions:
 
-1. **Shiv Gupta (Team Leader — Full-Stack Architect & Product Lead)**
-   - **Role:** System Architecture, API Gateway & Production Deployment
+1. **Gauri Gupta (Team Lead — Full-Stack Architect & Product Strategist)**
+   - **Role:** System Architecture, API Gateway & Project Leadership
    - **Key Contributions:**
-     - Orchestrated the complete monorepo architecture and modular Next.js App Router structure.
+     - Orchestrated the complete product roadmap, monorepo architecture, and modular Next.js App Router structure.
      - Implemented the autonomous serverless API gateway handling all 26 REST endpoints for the 10-step lifecycle.
-     - Managed CI/CD, GitHub repository synchronization, and Vercel cloud edge deployment.
-     - Designed the interactive 1-click in-app **Judge Evaluation Guide** and role switcher.
+     - Led the integration of the interactive 1-click in-app **Judge Evaluation Guide** and role switcher.
+     - Supervised CI/CD pipelines and production Vercel cloud edge deployment.
 
-2. **Team Member 1 — Backend & Cryptographic Security Engineer**
+2. **Shiv Gupta (Team Member — Full-Stack Engineering & Cloud Infrastructure)**
+   - **Role:** Cloud Infrastructure, State Machine & Production Deployment
+   - **Key Contributions:**
+     - Engineered the core lifecycle state machine (`BOOKING_TRANSITIONS`) and resilient client API bindings.
+     - Built and optimized responsive layouts across phone, tablet, and desktop viewports.
+     - Configured production cloud deployment on Vercel and managed repository versioning.
+     - Implemented the dynamic 10-step visual **Transaction Journey Stepper**.
+
+3. **Tanvi Khangat (Team Member — Backend & Cryptographic Security Engineer)**
    - **Role:** Domain Logic, Policy Engine & Tamper-Evident Ledger
    - **Key Contributions:**
      - Engineered the multi-factor Rules Evaluation Engine (enforcing the monthly 8-hour fair-usage cap, 1:15 adult supervisor ratios, and advance notice windows).
      - Built the cryptographic SHA-256 append-only Merkle ledger with block hashing, previous hash linkage, and verification APIs.
      - Implemented the transparent waiting-list state machine transitions and queue prioritization algorithm.
 
-3. **Team Member 2 — Frontend & UI/UX Accessibility Engineer**
-   - **Role:** Next.js UI Engineering, Mobile Responsiveness & Bilingual Localization
-   - **Key Contributions:**
-     - Developed responsive client components optimized for mobile phones, tablets, and desktop workstations.
-     - Implemented the bilingual English / हिंदी (Hindi) translation system for rural school accessibility.
-     - Built the 10-step visual **Transaction Journey Stepper**, interactive QR/OTP arrival check-in pass, and pan-India radius search filters.
-
-4. **Team Member 3 — Trust, Safety & Operations Specialist**
-   - **Role:** Operational Workflows, Dispute Tribunal & Data Modeling
+4. **Tanishka Dixit (Team Member — Trust, Safety & Operations Specialist)**
+   - **Role:** UI/UX Accessibility, Dispute Tribunal & Data Modeling
    - **Key Contributions:**
      - Designed the Day-of Operations console with comparative **Before-and-After Condition Reporting** and incident flagging.
      - Built the **Admin Dispute Tribunal** and verification queues ensuring strict human-in-the-loop oversight.
+     - Implemented the bilingual English / हिंदी (Hindi) translation system for rural school accessibility.
      - Modeled the realistic national laboratory database across 28 Indian States and UTs (JNVs, KVs, ATLs, and rural schools).
 
 ---
