@@ -26,6 +26,8 @@ import {
 import { useLanguage } from '../context/language-context'
 import { useAuth } from '../context/auth-context'
 import { ImpactMetrics, Lab } from '@labshare/shared'
+import { AnimatedCounter } from '../components/ui/animated-counter'
+import { getDefaultLabPhotos } from '../components/labs/photo-gallery'
 
 const InteractiveMap = dynamic(
   () =>
@@ -83,100 +85,167 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-12 sm:gap-16 pb-16">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-50/60 via-background to-background dark:from-primary-950/20 pt-12 pb-16 sm:py-24 border-b">
-        <div className="container relative z-10 flex flex-col items-center text-center">
-          {/* National Network Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-semibold mb-6 shadow-sm border border-emerald-300 dark:border-emerald-800">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            <span>
+      {/* Hero Section with Split Visuals & Animations */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary-50/70 via-background to-background dark:from-primary-950/20 pt-10 pb-16 sm:py-20 border-b">
+        <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          {/* Left Column: Mission, Headline & CTAs */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+            {/* National Network Badge */}
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-semibold mb-6 shadow-sm border border-emerald-300 dark:border-emerald-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>
+                {locale === 'en'
+                  ? 'Pan-India Network: Connecting 660+ Navodayas & Kendriya Vidyalayas'
+                  : 'अखिल भारतीय नेटवर्क: नवोदय, केंद्रीय विद्यालय एवं उत्कृष्ट स्कूलों की साझेदारी'}
+              </span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+              {locale === 'en' ? (
+                <>
+                  Every Science & Computer Lab Deserves{' '}
+                  <span className="text-primary underline decoration-amber-400 decoration-wavy decoration-2">
+                    Curious Students
+                  </span>
+                </>
+              ) : (
+                <>
+                  हर विज्ञान एवं कंप्यूटर प्रयोगशाला में{' '}
+                  <span className="text-primary underline decoration-amber-400 decoration-wavy decoration-2">
+                    जिज्ञासु छात्र
+                  </span>{' '}
+                  होने चाहिए
+                </>
+              )}
+            </h1>
+
+            <p className="mt-4 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
               {locale === 'en'
-                ? 'Pan-India Network: Connecting 660+ Navodayas & Kendriya Vidyalayas'
-                : 'अखिल भारतीय नेटवर्क: नवोदय, केंद्रीय विद्यालय एवं उत्कृष्ट स्कूलों की साझेदारी'}
-            </span>
+                ? 'Well-equipped Navodaya, Kendriya Vidyalayas & private schools have advanced science and computer labs that sit empty after hours. LabShare safely connects them with nearby rural schools, coaching groups, and NGOs across every city and district in India.'
+                : 'नवोदय, केंद्रीय विद्यालय और प्रमुख पब्लिक स्कूलों की आधुनिक प्रयोगशालाएं स्कूल समय के बाद खाली रहती हैं। लैबशेयर उन्हें भारत के हर शहर और जिले में आसपास के जरूरतमंद ग्रामीण स्कूलों और कोचिंग समूहों से सुरक्षित जोड़ता है।'}
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                href="/labs"
+                className="px-6 py-3 rounded-xl bg-primary hover:bg-primary-700 text-white font-bold text-sm shadow-md transition-all flex items-center space-x-2 hover:scale-102"
+              >
+                <span>{locale === 'en' ? 'Find Labs in Any City' : 'किसी भी शहर में लैब खोजें'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                href="/auth/login"
+                className="px-6 py-3 rounded-xl border border-input bg-card hover:bg-muted text-foreground font-semibold text-sm transition-all flex items-center space-x-2"
+              >
+                <span>{locale === 'en' ? 'Institutional Sign In' : 'संस्थागत साइन इन'}</span>
+              </Link>
+            </div>
+
+            {/* Trust Guarantees */}
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-muted-foreground pt-5 border-t w-full">
+              <div className="flex items-center space-x-1.5 font-medium">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Verified Sponsors</span>
+              </div>
+              <div className="flex items-center space-x-1.5 font-medium">
+                <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Zero Double-Booking</span>
+              </div>
+              <div className="flex items-center space-x-1.5 font-medium">
+                <Award className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>SHA-256 Ledger</span>
+              </div>
+              <div className="flex items-center space-x-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Minors Zero PII</span>
+              </div>
+            </div>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight max-w-4xl leading-tight">
-            {locale === 'en' ? (
-              <>
-                Every Science & Computer Lab Deserves{' '}
-                <span className="text-primary underline decoration-amber-400 decoration-wavy decoration-2">
-                  Curious Students
+          {/* Right Column: Visual Laboratory Showcase Card with Floating Badges */}
+          <div className="lg:col-span-5 relative w-full flex items-center justify-center">
+            <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-border group bg-slate-900">
+              <img
+                src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80"
+                alt="Students in Science Laboratory"
+                className="w-full h-[360px] sm:h-[420px] object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/20 pointer-events-none" />
+
+              {/* Bottom Caption */}
+              <div className="absolute bottom-4 left-4 right-4 text-white z-10">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary text-white mb-1.5 inline-block">
+                  Atal Tinkering & Composite Science
                 </span>
-              </>
-            ) : (
-              <>
-                हर विज्ञान एवं कंप्यूटर प्रयोगशाला में{' '}
-                <span className="text-primary underline decoration-amber-400 decoration-wavy decoration-2">
-                  जिज्ञासु छात्र
-                </span>{' '}
-                होने चाहिए
-              </>
-            )}
-          </h1>
+                <p className="font-bold text-sm sm:text-base leading-snug drop-shadow-md">
+                  Hands-On STEM & Robotics Lab
+                </p>
+                <p className="text-xs text-slate-300 drop-shadow-sm flex items-center space-x-1 mt-0.5">
+                  <MapPin className="w-3 h-3 text-primary-400" />
+                  <span>Jawahar Navodaya Vidyalaya Campus Network</span>
+                </p>
+              </div>
 
-          <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            {locale === 'en'
-              ? 'Well-equipped Navodaya, Kendriya Vidyalayas & private schools have advanced science and computer labs that sit empty after hours. LabShare safely connects them with nearby rural schools, coaching groups, and NGOs across every district in India.'
-              : 'नवोदय, केंद्रीय विद्यालय और प्रमुख पब्लिक स्कूलों की आधुनिक प्रयोगशालाएं स्कूल समय के बाद खाली रहती हैं। लैबशेयर उन्हें भारत के हर जिले में आसपास के जरूरतमंद ग्रामीण स्कूलों और कोचिंग समूहों से सुरक्षित जोड़ता है।'}
-          </p>
+              {/* Floating Badge 1 (Top Left): Verified Adults */}
+              <div className="absolute -top-3 -left-3 z-20 animate-float bg-card/95 backdrop-blur-md border border-border rounded-xl px-3 py-2 shadow-lg flex items-center space-x-2">
+                <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-[10px] text-muted-foreground font-semibold">Teacher Vouched</div>
+                  <div className="text-xs font-bold text-foreground">100% Supervised</div>
+                </div>
+              </div>
 
-          {/* CTA Buttons */}
-          <div className="mt-8 flex flex-wrap gap-4 justify-center">
-            <Link
-              href="/labs"
-              className="px-6 py-3 rounded-lg bg-primary hover:bg-primary-700 text-white font-bold text-sm shadow-md transition-all flex items-center space-x-2"
-            >
-              <span>{locale === 'en' ? 'Find Nearby Labs' : 'पास की लैब खोजें'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              {/* Floating Badge 2 (Top Right): Google Maps */}
+              <div className="absolute -top-3 -right-3 z-20 animate-float-slow bg-card/95 backdrop-blur-md border border-border rounded-xl px-3 py-2 shadow-lg flex items-center space-x-2">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                  <Navigation className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-[10px] text-muted-foreground font-semibold">Navigation</div>
+                  <div className="text-xs font-bold text-foreground">Google Maps GPS</div>
+                </div>
+              </div>
 
-            <Link
-              href="/auth/login"
-              className="px-6 py-3 rounded-lg border border-input bg-card hover:bg-muted text-foreground font-semibold text-sm transition-all flex items-center space-x-2"
-            >
-              <span>{locale === 'en' ? 'Try Demo Accounts' : 'डेमो खाते देखें'}</span>
-            </Link>
-          </div>
-
-          {/* Trust Guarantees */}
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-muted-foreground pt-6 border-t w-full max-w-3xl">
-            <div className="flex items-center justify-center space-x-1.5 font-medium">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>{locale === 'en' ? 'Verified Adult Sponsors' : 'सत्यापित वयस्क प्रायोजक'}</span>
-            </div>
-            <div className="flex items-center justify-center space-x-1.5 font-medium">
-              <FileCheck className="w-4 h-4 text-emerald-600" />
-              <span>{locale === 'en' ? 'Zero Double-Booking DB' : 'डबल-बुकिंग मुक्त डेटाबेस'}</span>
-            </div>
-            <div className="flex items-center justify-center space-x-1.5 font-medium">
-              <Award className="w-4 h-4 text-emerald-600" />
-              <span>{locale === 'en' ? 'SHA-256 Audit Chain' : 'क्रिप्टोग्राफिक ऑडिट लेजर'}</span>
-            </div>
-            <div className="flex items-center justify-center space-x-1.5 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>{locale === 'en' ? 'Minors Zero PII Stored' : 'छात्र गोपनीयता सुरक्षित'}</span>
+              {/* Floating Badge 3 (Bottom Right): Trust Score */}
+              <div className="absolute bottom-16 -right-3 z-20 animate-float bg-card/95 backdrop-blur-md border border-border rounded-xl px-3 py-2 shadow-lg flex items-center space-x-2">
+                <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 flex items-center justify-center text-amber-500">
+                  <Star className="w-4 h-4 fill-amber-500" />
+                </div>
+                <div>
+                  <div className="text-[10px] text-muted-foreground font-semibold">Verified Trust</div>
+                  <div className="text-xs font-bold text-foreground">98/100 Rating</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Live Impact Counters (Hero feature) */}
+      {/* Live Impact Counters (Hero feature with Animated Numbers) */}
       <section className="container">
         <div className="text-center mb-8">
           <h2 className="text-xs uppercase font-bold tracking-wider text-primary">
-            {locale === 'en' ? 'Community Impact in Numbers' : 'समुदाय पर प्रभाव'}
+            {locale === 'en' ? 'National Impact Metrics' : 'अखिल भारतीय प्रभाव'}
           </h2>
           <p className="text-2xl font-extrabold tracking-tight mt-1">
-            {locale === 'en' ? 'Resources Shared Across Bundelkhand' : 'बुंदेलखंड में साझा किए गए संसाधन'}
+            {locale === 'en'
+              ? 'Educational Resources Shared Across India'
+              : 'भारत भर में साझा किए गए प्रयोगशाला संसाधन'}
           </p>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div className="bg-card border rounded-xl p-5 shadow-sm text-center">
+          <div className="bg-card border rounded-2xl p-5 shadow-sm text-center hover:shadow-md transition-shadow">
             <div className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">
-              {metrics ? metrics.totalLabHoursShared.toLocaleString() : '420'}+
+              <AnimatedCounter
+                value={metrics ? metrics.totalLabHoursShared : 552}
+                suffix="+"
+              />
             </div>
             <div className="text-xs sm:text-sm font-semibold text-foreground">
               {locale === 'en' ? 'Lab Hours Shared' : 'साझा किए लैब घंटे'}
@@ -186,9 +255,12 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="bg-card border rounded-xl p-5 shadow-sm text-center">
+          <div className="bg-card border rounded-2xl p-5 shadow-sm text-center hover:shadow-md transition-shadow">
             <div className="text-3xl sm:text-4xl font-extrabold text-emerald-600 mb-1">
-              {metrics ? metrics.totalStudentsBenefited.toLocaleString() : '9,240'}+
+              <AnimatedCounter
+                value={metrics ? metrics.totalStudentsBenefited : 12144}
+                suffix="+"
+              />
             </div>
             <div className="text-xs sm:text-sm font-semibold text-foreground">
               {locale === 'en' ? 'Students Benefited' : 'लाभान्वित छात्र'}
@@ -198,21 +270,29 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="bg-card border rounded-xl p-5 shadow-sm text-center">
+          <div className="bg-card border rounded-2xl p-5 shadow-sm text-center hover:shadow-md transition-shadow">
             <div className="text-3xl sm:text-4xl font-extrabold text-amber-500 mb-1">
-              ₹{metrics ? (metrics.estimatedValueINR / 1000).toFixed(0) : '252'}k
+              <AnimatedCounter
+                value={metrics ? Math.round(metrics.estimatedValueINR / 1000) : 331}
+                prefix="₹"
+                suffix="k"
+              />
             </div>
             <div className="text-xs sm:text-sm font-semibold text-foreground">
               {locale === 'en' ? 'Economic Value Generated' : 'साझा संसाधनों का मूल्य'}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1">
-              {locale === 'en' ? 'Saved by rural schools' : 'ग्रामीण स्कूलों की बचत'}
+              {locale === 'en' ? 'Saved by rural schools & NGOs' : 'ग्रामीण स्कूलों की बचत'}
             </div>
           </div>
 
-          <div className="bg-card border rounded-xl p-5 shadow-sm text-center">
+          <div className="bg-card border rounded-2xl p-5 shadow-sm text-center hover:shadow-md transition-shadow">
             <div className="text-3xl sm:text-4xl font-extrabold text-purple-600 mb-1">
-              {metrics ? metrics.idleCapacityUtilisationPercent : '38.5'}%
+              <AnimatedCounter
+                value={metrics ? metrics.idleCapacityUtilisationPercent : 38.5}
+                suffix="%"
+                decimals={1}
+              />
             </div>
             <div className="text-xs sm:text-sm font-semibold text-foreground">
               {locale === 'en' ? 'Idle Capacity Utilized' : 'खाली क्षमता का उपयोग'}
@@ -344,10 +424,12 @@ export default function HomePage() {
         <div className="flex justify-between items-end mb-6">
           <div>
             <h2 className="text-xs uppercase font-bold tracking-wider text-primary">
-              {locale === 'en' ? 'Available Nearby' : 'उपलब्ध प्रयोगशालाएं'}
+              {locale === 'en' ? 'Verified Institutions' : 'सत्यापित विद्यालय'}
             </h2>
             <p className="text-2xl font-extrabold tracking-tight mt-1">
-              {locale === 'en' ? 'Featured Labs in Jhansi District' : 'झांसी जिले की प्रमुख प्रयोगशालाएं'}
+              {locale === 'en'
+                ? 'Featured Labs Across India'
+                : 'भारत भर की प्रमुख विद्यालय प्रयोगशालाएं'}
             </p>
           </div>
           <Link
@@ -360,57 +442,81 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredLabs.map((lab) => (
-            <div
-              key={lab.id}
-              className="bg-card border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
-            >
-              <div className="p-5">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary">
-                    {lab.type.replace('_', ' ')}
+          {featuredLabs.map((lab) => {
+            const photoUrl =
+              lab.photos?.[0]?.url ||
+              getDefaultLabPhotos(lab.type, lab.name)[0]?.url
+            return (
+              <div
+                key={lab.id}
+                className="group bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1"
+              >
+                <div>
+                  {/* Photo Header */}
+                  <div className="relative w-full h-44 overflow-hidden bg-slate-900">
+                    <img
+                      src={photoUrl}
+                      alt={lab.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                    <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20">
+                        {lab.type.replace('_', ' ')}
+                      </span>
+                      <div className="flex items-center space-x-1 text-xs font-bold text-amber-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20">
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                        <span>{lab.averageRating || 4.9}</span>
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-2.5 left-3 right-3 z-10 text-white">
+                      <h3 className="font-bold text-base leading-snug drop-shadow-md truncate">
+                        {lab.name}
+                      </h3>
+                      <div className="flex items-center text-xs text-slate-300 drop-shadow-sm mt-0.5">
+                        <MapPin className="w-3 h-3 mr-1 text-primary-400 shrink-0" />
+                        <span className="truncate">
+                          {lab.organization?.name || 'School'} • {lab.organization?.district}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-4">
+                      {lab.description}
+                    </p>
+
+                    <div className="flex items-center justify-between text-xs pt-3 border-t text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Users className="w-3.5 h-3.5 text-primary" />
+                        <span className="font-medium text-foreground">Cap: {lab.capacity}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Award className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="font-bold text-primary">Trust: {lab.trustScore}/100</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-muted/40 border-t flex justify-between items-center">
+                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center space-x-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>{locale === 'en' ? 'Open for Bookings' : 'बुकिंग हेतु उपलब्ध'}</span>
                   </span>
-                  <div className="flex items-center space-x-1 text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded">
-                    <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                    <span>{lab.averageRating || 4.9}</span>
-                  </div>
-                </div>
-
-                <h3 className="font-bold text-base text-foreground mb-1">{lab.name}</h3>
-                <div className="flex items-center text-xs text-muted-foreground mb-3">
-                  <MapPin className="w-3.5 h-3.5 mr-1 text-primary shrink-0" />
-                  <span>{lab.organization?.name || 'Navodaya Vidyalaya'}</span>
-                </div>
-
-                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-4">
-                  {lab.description}
-                </p>
-
-                <div className="flex items-center justify-between text-xs pt-3 border-t text-muted-foreground">
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>Cap: {lab.capacity} students</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Award className="w-3.5 h-3.5 text-primary" />
-                    <span>Trust: {lab.trustScore}/100</span>
-                  </div>
+                  <Link
+                    href={`/labs/${lab.id}`}
+                    className="px-3.5 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-700 transition-colors shadow-sm"
+                  >
+                    {locale === 'en' ? 'View Details' : 'विवरण देखें'}
+                  </Link>
                 </div>
               </div>
-
-              <div className="p-4 bg-muted/40 border-t flex justify-between items-center">
-                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                  {locale === 'en' ? 'Open for Bookings' : 'बुकिंग हेतु उपलब्ध'}
-                </span>
-                <Link
-                  href={`/labs/${lab.id}`}
-                  className="px-3 py-1.5 rounded-md bg-primary text-white text-xs font-bold hover:bg-primary-700 transition-colors"
-                >
-                  {locale === 'en' ? 'View Details' : 'विवरण देखें'}
-                </Link>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
     </div>

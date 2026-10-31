@@ -24,6 +24,7 @@ import { useLanguage } from '../../../context/language-context'
 import { useAuth } from '../../../context/auth-context'
 import { AvailabilitySlot, Lab, getGoogleMapsDirectionsUrl } from '@labshare/shared'
 import { GoogleMapEmbed } from '../../../components/maps/google-map-embed'
+import { PhotoGallery } from '../../../components/labs/photo-gallery'
 
 export default function LabDetailPage() {
   const params = useParams()
@@ -93,6 +94,9 @@ export default function LabDetailPage() {
         <span>/</span>
         <span className="text-foreground font-medium">{lab.name}</span>
       </div>
+
+      {/* Interactive Photo Gallery */}
+      <PhotoGallery lab={lab} locale={locale} />
 
       {/* Main Header Banner */}
       <div className="bg-card border rounded-2xl p-6 sm:p-8 shadow-sm">

@@ -33,6 +33,7 @@ import {
   haversineDistanceKm,
 } from '@labshare/shared'
 import { LocationSearchBar } from '../../components/maps/location-search-bar'
+import { getDefaultLabPhotos } from '../../components/labs/photo-gallery'
 
 // Dynamically import InteractiveMap with SSR disabled to prevent Leaflet window errors
 const InteractiveMap = dynamic(
@@ -412,57 +413,74 @@ function LabCard({
     userLng
   )
 
+  const photoUrl =
+    lab.photos?.[0]?.url || getDefaultLabPhotos(lab.type, lab.name)[0]?.url
+
   return (
     <div
       onMouseEnter={onHover}
-      className={`bg-card border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between ${
-        isSelected ? 'ring-2 ring-primary border-primary' : ''
+      className={`group bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 ${
+        isSelected ? 'ring-2 ring-primary border-primary shadow-lg' : ''
       }`}
     >
-      <div className="p-5">
-        {/* Type & Rating */}
-        <div className="flex justify-between items-start mb-2.5">
-          <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary">
-            {lab.type.replace('_', ' ')}
-          </span>
-          <div className="flex items-center space-x-1 text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded">
-            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-            <span>{lab.averageRating || 4.9}</span>
-          </div>
-        </div>
+      <div>
+        {/* Photo Header with Overlay */}
+        <div className="relative w-full h-44 overflow-hidden bg-slate-900">
+          <img
+            src={photoUrl}
+            alt={lab.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
-        {/* Title & Host Org */}
-        <h2 className="font-bold text-base text-foreground mb-1 leading-snug">
-          {lab.name}
-        </h2>
-        <div className="flex items-center text-xs text-muted-foreground mb-3">
-          <MapPin className="w-3.5 h-3.5 mr-1 text-primary shrink-0" />
-          <span className="truncate">
-            {lab.organization?.name || 'School'} • {lab.organization?.district}
-          </span>
-        </div>
-
-        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-4">
-          {lab.description}
-        </p>
-
-        {/* Stats Bar */}
-        <div className="grid grid-cols-3 gap-2 text-center text-xs pt-3 border-t bg-muted/20 -mx-5 -mb-5 px-5 py-3">
-          <div>
-            <div className="text-muted-foreground text-[10px]">Distance</div>
-            <div className="font-bold text-foreground">
-              {lab.distanceKm !== undefined
-                ? formatDistanceKm(lab.distanceKm, locale)
-                : 'Near'}
+          {/* Floating Top Badges */}
+          <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20">
+              {lab.type.replace('_', ' ')}
+            </span>
+            <div className="flex items-center space-x-1 text-xs font-bold text-amber-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>{lab.averageRating || 4.9}</span>
             </div>
           </div>
-          <div>
-            <div className="text-muted-foreground text-[10px]">Capacity</div>
-            <div className="font-bold text-foreground">{lab.capacity}</div>
+
+          {/* Bottom Title on Image */}
+          <div className="absolute bottom-2.5 left-3 right-3 z-10 text-white">
+            <h2 className="font-bold text-sm sm:text-base leading-snug drop-shadow-md truncate">
+              {lab.name}
+            </h2>
+            <div className="flex items-center text-[11px] text-slate-300 drop-shadow-sm mt-0.5">
+              <MapPin className="w-3 h-3 mr-1 text-primary-400 shrink-0" />
+              <span className="truncate">
+                {lab.organization?.name || 'School'} • {lab.organization?.district}
+              </span>
+            </div>
           </div>
-          <div>
-            <div className="text-muted-foreground text-[10px]">Trust Score</div>
-            <div className="font-bold text-primary">{lab.trustScore}/100</div>
+        </div>
+
+        <div className="p-4">
+          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-4">
+            {lab.description}
+          </p>
+
+          {/* Stats Bar */}
+          <div className="grid grid-cols-3 gap-2 text-center text-xs pt-3 border-t bg-muted/20 -mx-4 -mb-4 px-4 py-2.5">
+            <div>
+              <div className="text-muted-foreground text-[10px]">Distance</div>
+              <div className="font-bold text-foreground">
+                {lab.distanceKm !== undefined
+                  ? formatDistanceKm(lab.distanceKm, locale)
+                  : 'Near'}
+              </div>
+            </div>
+            <div>
+              <div className="text-muted-foreground text-[10px]">Capacity</div>
+              <div className="font-bold text-foreground">{lab.capacity}</div>
+            </div>
+            <div>
+              <div className="text-muted-foreground text-[10px]">Trust Score</div>
+              <div className="font-bold text-primary">{lab.trustScore}/100</div>
+            </div>
           </div>
         </div>
       </div>
