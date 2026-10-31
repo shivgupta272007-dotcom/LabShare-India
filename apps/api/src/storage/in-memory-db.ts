@@ -147,6 +147,9 @@ export class InMemoryDbService {
   findLabs(query: {
     type?: string
     district?: string
+    state?: string
+    city?: string
+    query?: string
     minCapacity?: number
     lat?: number
     lng?: number
@@ -158,7 +161,30 @@ export class InMemoryDbService {
       .filter((l) => {
         if (query.type && l.type !== query.type) return false
         if (query.minCapacity && l.capacity < query.minCapacity) return false
-        if (query.district && l.organization?.district?.toLowerCase() !== query.district.toLowerCase()) return false
+        if (
+          query.district &&
+          l.organization?.district?.toLowerCase() !== query.district.toLowerCase() &&
+          !l.organization?.address?.toLowerCase().includes(query.district.toLowerCase())
+        ) {
+          return false
+        }
+        if (
+          query.state &&
+          l.organization?.state?.toLowerCase() !== query.state.toLowerCase()
+        ) {
+          return false
+        }
+        if (query.query) {
+          const q = query.query.toLowerCase()
+          const matched =
+            l.name.toLowerCase().includes(q) ||
+            l.description?.toLowerCase().includes(q) ||
+            l.organization?.name?.toLowerCase().includes(q) ||
+            l.organization?.district?.toLowerCase().includes(q) ||
+            l.organization?.state?.toLowerCase().includes(q) ||
+            l.organization?.address?.toLowerCase().includes(q)
+          if (!matched) return false
+        }
         return true
       })
   }

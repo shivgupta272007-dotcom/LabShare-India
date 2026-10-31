@@ -110,6 +110,9 @@ export class ApiClient {
     search: (params: {
       type?: string
       district?: string
+      state?: string
+      city?: string
+      query?: string
       minCapacity?: number
       lat?: number
       lng?: number
@@ -119,6 +122,9 @@ export class ApiClient {
       const q = new URLSearchParams()
       if (params.type) q.set('type', params.type)
       if (params.district) q.set('district', params.district)
+      if (params.state) q.set('state', params.state)
+      if (params.city) q.set('city', params.city)
+      if (params.query) q.set('query', params.query)
       if (params.minCapacity) q.set('minCapacity', params.minCapacity.toString())
       if (params.lat) q.set('lat', params.lat.toString())
       if (params.lng) q.set('lng', params.lng.toString())

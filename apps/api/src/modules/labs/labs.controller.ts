@@ -28,6 +28,9 @@ export class LabsController {
   @ApiOperation({ summary: 'Search and discover participating school labs with distance calculation' })
   @ApiQuery({ name: 'type', required: false })
   @ApiQuery({ name: 'district', required: false })
+  @ApiQuery({ name: 'state', required: false })
+  @ApiQuery({ name: 'city', required: false })
+  @ApiQuery({ name: 'query', required: false })
   @ApiQuery({ name: 'minCapacity', required: false, type: Number })
   @ApiQuery({ name: 'lat', required: false, type: Number })
   @ApiQuery({ name: 'lng', required: false, type: Number })
@@ -36,6 +39,9 @@ export class LabsController {
   async searchLabs(
     @Query('type') type?: string,
     @Query('district') district?: string,
+    @Query('state') state?: string,
+    @Query('city') city?: string,
+    @Query('query') queryText?: string,
     @Query('minCapacity') minCapacity?: string,
     @Query('lat') lat?: string,
     @Query('lng') lng?: string,
@@ -45,6 +51,9 @@ export class LabsController {
     return this.labsService.searchLabs({
       type,
       district,
+      state,
+      city,
+      query: queryText,
       minCapacity: minCapacity ? parseInt(minCapacity, 10) : undefined,
       lat: lat ? parseFloat(lat) : undefined,
       lng: lng ? parseFloat(lng) : undefined,

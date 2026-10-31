@@ -18,7 +18,7 @@ import { DEMO_ACCOUNTS, DEMO_OTP, UserRole } from '@labshare/shared'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { loginWithOtp, switchRole } = useAuth()
+  const { client, loginWithOtp, switchRole } = useAuth()
   const { locale, t } = useLanguage()
 
   const [phone, setPhone] = useState('')
@@ -41,9 +41,11 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
     try {
-      // In demo mode OTP 123456 is preloaded
-      setOtp(DEMO_OTP)
+      const res = await client.auth.sendOtp(phone)
+      setOtp(res.demoOtp || DEMO_OTP)
       setStep('OTP')
+    } catch (err: any) {
+      setError(err.message || 'Failed to send OTP')
     } finally {
       setLoading(false)
     }
@@ -98,17 +100,17 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* 1-Click Demo Account Picker (Judge & Evaluator Shortcut) */}
+      {/* 1-Click Institutional Role Directory (Fast-Track Login) */}
       <div className="w-full bg-primary-50/70 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-900 rounded-xl p-5 mb-8 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-1.5 text-xs font-bold text-primary">
             <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
             <span>
-              {locale === 'en' ? 'Quick Demo Account Login' : 'त्वरित डेमो खाता चयन'}
+              {locale === 'en' ? 'Institutional Role Directory (Instant Access)' : 'संस्थागत भूमिका डायरेक्ट्री (त्वरित प्रवेश)'}
             </span>
           </div>
-          <span className="text-[10px] text-muted-foreground">
-            {locale === 'en' ? '1-Click Instant Access' : '1-क्लिक एक्सेस'}
+          <span className="text-[10px] text-muted-foreground font-medium">
+            {locale === 'en' ? 'Verified Test Personas' : 'सत्यापित खाते'}
           </span>
         </div>
 

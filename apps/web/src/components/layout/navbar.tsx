@@ -52,24 +52,26 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Top Demo Notification Ribbon */}
-      <div className="bg-primary-900 text-primary-50 px-4 py-1 text-xs flex justify-between items-center">
+      {/* Top Pan-India National Network Ribbon */}
+      <div className="bg-slate-900 text-slate-100 px-4 py-1 text-xs flex justify-between items-center border-b border-slate-800">
         <div className="flex items-center space-x-2">
-          <span className="bg-amber-500 text-amber-950 font-bold px-1.5 py-0.5 rounded text-[10px]">DEMO MODE</span>
-          <span>
+          <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded text-[10px] tracking-wider uppercase shadow-sm">
+            PAN-INDIA
+          </span>
+          <span className="text-slate-300 hidden sm:inline">
             {locale === 'en'
-              ? 'Bundelkhand Pilot: JNV Barwa Sagar, DPS Jhansi, 5 Community Schools'
-              : 'बुंदेलखंड पायलट: जेएनवी बरुआ सागर, डीपीएस झांसी एवं 5 ग्रामीण विद्यालय'}
+              ? 'National School & Community Lab Network – Active Across All 28 States & UTs'
+              : 'राष्ट्रीय विद्यालय एवं सामुदायिक प्रयोगशाला नेटवर्क – 28 राज्यों में सक्रिय'}
           </span>
         </div>
         <div className="flex items-center space-x-3">
-          <span className="hidden sm:inline text-primary-200">
-            {locale === 'en' ? 'Active Role:' : 'सक्रिय भूमिका:'}
+          <span className="hidden sm:inline text-slate-400">
+            {locale === 'en' ? 'Logged In Role:' : 'सक्रिय भूमिका:'}
           </span>
           <div className="relative">
             <button
               onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-              className="flex items-center space-x-1 font-semibold text-amber-300 hover:text-white"
+              className="flex items-center space-x-1 font-semibold text-emerald-400 hover:text-white"
             >
               <span>{roleLabels[role]?.[locale]}</span>
               <ChevronDown className="w-3.5 h-3.5" />
@@ -77,7 +79,7 @@ export function Navbar() {
             {roleDropdownOpen && (
               <div className="absolute right-0 mt-1 w-64 bg-card border rounded-md shadow-lg py-1 z-50 text-foreground">
                 <div className="px-3 py-1.5 text-[11px] font-semibold text-muted-foreground border-b">
-                  Switch Role / भूमिका बदलें
+                  Switch Active Role / भूमिका बदलें
                 </div>
                 {(Object.keys(roleLabels) as UserRole[]).map((r) => (
                   <button
@@ -108,12 +110,12 @@ export function Navbar() {
           </div>
           <div>
             <div className="font-extrabold text-lg tracking-tight flex items-center space-x-1.5 text-foreground">
-              <span>LabShare</span>
+              <span>LabShare India</span>
               <span className="text-xs font-normal text-muted-foreground">|</span>
-              <span className="text-sm font-bold text-primary">लैबशेयर</span>
+              <span className="text-sm font-bold text-primary">लैबशेयर भारत</span>
             </div>
             <div className="text-[10px] text-muted-foreground">
-              {locale === 'en' ? 'Rural School & Lab Network' : 'ग्रामीण विद्यालय एवं प्रयोगशाला नेटवर्क'}
+              {locale === 'en' ? 'National School & Community Lab Network' : 'राष्ट्रीय विद्यालय एवं सामुदायिक प्रयोगशाला नेटवर्क'}
             </div>
           </div>
         </Link>

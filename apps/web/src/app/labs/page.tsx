@@ -62,12 +62,13 @@ export default function LabsSearchPage() {
   const [labs, setLabs] = useState<Array<Lab & { distanceKm?: number }>>([])
   const [loading, setLoading] = useState(true)
 
-  // Reference coordinates for distance calculation (defaults to Jhansi central)
-  const [activeLat, setActiveLat] = useState<number>(25.4484)
-  const [activeLng, setActiveLng] = useState<number>(78.5685)
+  // Reference coordinates for distance calculation (defaults to Delhi NCR)
+  const [activeLat, setActiveLat] = useState<number>(28.6139)
+  const [activeLng, setActiveLng] = useState<number>(77.2090)
   const [activeLocationName, setActiveLocationName] = useState<string>(
-    'Jhansi Central, Bundelkhand'
+    'Delhi NCR'
   )
+  const [selectedRadiusKm, setSelectedRadiusKm] = useState<number>(50)
   const [userGpsCoords, setUserGpsCoords] = useState<{
     lat: number
     lng: number
@@ -78,7 +79,7 @@ export default function LabsSearchPage() {
   const [selectedDistrict, setSelectedDistrict] = useState<string>('')
   const [minCapacity, setMinCapacity] = useState<number>(0)
   const [sortBy, setSortBy] = useState<string>('distance')
-  const [viewMode, setViewMode] = useState<'grid' | 'split' | 'map'>('split')
+  const [viewMode, setViewMode] = useState<'split' | 'map' | 'grid'>('split')
   const [selectedLabId, setSelectedLabId] = useState<string | undefined>()
 
   useEffect(() => {
@@ -87,9 +88,11 @@ export default function LabsSearchPage() {
       .search({
         type: selectedType || undefined,
         district: selectedDistrict || undefined,
+        city: activeLocationName || undefined,
         minCapacity: minCapacity || undefined,
         lat: activeLat,
         lng: activeLng,
+        radiusKm: selectedRadiusKm,
         sortBy,
       })
       .then((data) => {
@@ -117,7 +120,7 @@ export default function LabsSearchPage() {
       })
       .catch((err) => console.error('Failed to load labs:', err))
       .finally(() => setLoading(false))
-  }, [client, selectedType, selectedDistrict, minCapacity, sortBy, activeLat, activeLng])
+  }, [client, selectedType, selectedDistrict, minCapacity, sortBy, activeLat, activeLng, selectedRadiusKm, activeLocationName])
 
   const handleLocationChange = (lat: number, lng: number, label: string) => {
     setActiveLat(lat)
@@ -214,6 +217,8 @@ export default function LabsSearchPage() {
         <LocationSearchBar
           onLocationSelect={handleLocationChange}
           currentLocationName={activeLocationName}
+          selectedRadiusKm={selectedRadiusKm}
+          onRadiusChange={setSelectedRadiusKm}
           locale={locale}
         />
 

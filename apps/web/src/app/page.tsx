@@ -86,13 +86,13 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-primary-50/60 via-background to-background dark:from-primary-950/20 pt-12 pb-16 sm:py-24 border-b">
         <div className="container relative z-10 flex flex-col items-center text-center">
-          {/* Pilot Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-primary-100 text-primary-900 dark:bg-primary-950 dark:text-primary-300 text-xs font-semibold mb-6 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+          {/* National Network Badge */}
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-semibold mb-6 shadow-sm border border-emerald-300 dark:border-emerald-800">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span>
               {locale === 'en'
-                ? 'Bundelkhand Pilot: Connecting Navodaya & Public Schools'
-                : 'बुंदेलखंड पायलट: नवोदय एवं पब्लिक स्कूलों की प्रयोगशाला साझेदारी'}
+                ? 'Pan-India Network: Connecting 660+ Navodayas & Kendriya Vidyalayas'
+                : 'अखिल भारतीय नेटवर्क: नवोदय, केंद्रीय विद्यालय एवं उत्कृष्ट स्कूलों की साझेदारी'}
             </span>
           </div>
 
@@ -100,14 +100,14 @@ export default function HomePage() {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight max-w-4xl leading-tight">
             {locale === 'en' ? (
               <>
-                Every Science Lab Deserves{' '}
+                Every Science & Computer Lab Deserves{' '}
                 <span className="text-primary underline decoration-amber-400 decoration-wavy decoration-2">
                   Curious Students
                 </span>
               </>
             ) : (
               <>
-                हर विज्ञान प्रयोगशाला में{' '}
+                हर विज्ञान एवं कंप्यूटर प्रयोगशाला में{' '}
                 <span className="text-primary underline decoration-amber-400 decoration-wavy decoration-2">
                   जिज्ञासु छात्र
                 </span>{' '}
@@ -118,8 +118,8 @@ export default function HomePage() {
 
           <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
             {locale === 'en'
-              ? 'Well-equipped Navodaya & private schools have advanced science and computer labs that sit empty after hours. LabShare safely connects them with nearby rural schools, coaching groups, and NGOs.'
-              : 'नवोदय और बड़े स्कूलों की आधुनिक प्रयोगशालाएं स्कूल समय के बाद खाली रहती हैं। लैबशेयर उन्हें आसपास के जरूरतमंद ग्रामीण स्कूलों और कोचिंग समूहों से सुरक्षित जोड़ता है।'}
+              ? 'Well-equipped Navodaya, Kendriya Vidyalayas & private schools have advanced science and computer labs that sit empty after hours. LabShare safely connects them with nearby rural schools, coaching groups, and NGOs across every district in India.'
+              : 'नवोदय, केंद्रीय विद्यालय और प्रमुख पब्लिक स्कूलों की आधुनिक प्रयोगशालाएं स्कूल समय के बाद खाली रहती हैं। लैबशेयर उन्हें भारत के हर जिले में आसपास के जरूरतमंद ग्रामीण स्कूलों और कोचिंग समूहों से सुरक्षित जोड़ता है।'}
           </p>
 
           {/* CTA Buttons */}
