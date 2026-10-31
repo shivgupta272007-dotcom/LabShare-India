@@ -1,0 +1,43 @@
+{
+  "name": "labshare",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rural School & Community Lab Network – connecting idle school labs with communities that need them",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "pnpm --filter @labshare/shared build && pnpm --filter @labshare/api build && pnpm --filter @labshare/web build",
+    "test": "pnpm --filter @labshare/shared test && pnpm --filter @labshare/api test",
+    "test:e2e": "pnpm --filter @labshare/web test:e2e",
+    "lint": "pnpm --filter @labshare/web lint",
+    "typecheck": "pnpm --filter @labshare/shared typecheck && pnpm --filter @labshare/web typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:migrate": "pnpm --filter @labshare/api prisma migrate dev",
+    "db:seed": "pnpm --filter @labshare/api run db:seed",
+    "db:reset": "pnpm --filter @labshare/api prisma migrate reset --force && pnpm db:seed",
+    "demo": "pnpm dev",
+    "openapi:generate": "pnpm --filter @labshare/api run openapi:generate",
+    "prepare": "husky"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.6.5",
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yaml,yml}": ["prettier --write"]
+  },
+  "packageManager": "pnpm@9.1.0"
+}

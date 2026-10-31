@@ -1,0 +1,833 @@
+// ============================================================
+// LabShare – Prisma Schema
+// PostgreSQL 16 + PostGIS (Haversine fallback)
+// Exclusion constraints on (lab_id, time_range) enforced via SQL migration
+// ============================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp"), pgcrypto, btreeGist(map: "btree_gist")]
+}
+
+// ──────────────────────────────────────────────────────────
+// ORGANIZATIONS
+// ──────────────────────────────────────────────────────────
+
+model Organization {
+  id                 String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name               String             @db.VarChar(200)
+  type               OrgType
+  verificationStatus VerificationStatus @default(PENDING)
+  udiseCode          String?            @unique @db.VarChar(11)
+  registrationNumber String?            @db.VarChar(50)
+  address            String             @db.VarChar(500)
+  district           String             @db.VarChar(100)
+  state              String             @db.VarChar(100)
+  pincode            String             @db.VarChar(6)
+  phone              String             @db.VarChar(10)
+  email              String?            @db.VarChar(255)
+  website            String?            @db.VarChar(500)
+  logoFileId         String?            @db.Uuid
+  lat                Decimal?           @db.Decimal(10, 7)
+  lng                Decimal?           @db.Decimal(10, 7)
+  trustScore         Decimal            @default(50) @db.Decimal(5, 2)
+  isActive           Boolean            @default(true)
+  isSuspended        Boolean            @default(false)
+  suspendedUntil     DateTime?
+  suspensionReason   String?
+  verifiedByUserId   String?            @db.Uuid
+  verifiedAt         DateTime?
+  verificationNote   String?
+  version            Int                @default(1)
+  deletedAt          DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  memberships    Membership[]
+  labs           Lab[]
+  studentGroups  StudentGroup[]
+  bookings       Booking[]           @relation("OrgBookings")
+  disputes       Dispute[]           @relation("OrgDisputes")
+  trustScoreHist TrustScoreEvent[]
+  trustScoreRec  TrustScoreRecord?
+  auditLogs      AuditLog[]          @relation("OrgAudit")
+  documents      File[]              @relation("OrgDocuments")
+  verifiedBy     User?               @relation("VerifiedOrgs", fields: [verifiedByUserId], references: [id])
+
+  @@index([type, verificationStatus, isActive])
+  @@index([district, state])
+  @@index([trustScore])
+  @@map("organizations")
+}
+
+// ──────────────────────────────────────────────────────────
+// USERS & AUTH
+// ──────────────────────────────────────────────────────────
+
+model User {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  phone            String    @unique @db.VarChar(10)
+  email            String?   @unique @db.VarChar(255)
+  name             String    @db.VarChar(200)
+  avatarFileId     String?   @db.Uuid
+  isActive         Boolean   @default(true)
+  otpAttempts      Int       @default(0)
+  otpLockedUntil   DateTime?
+  lastLoginAt      DateTime?
+  lastLoginIp      String?   @db.VarChar(45)
+  version          Int       @default(1)
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  memberships       Membership[]
+  refreshTokens     RefreshToken[]
+  otpRequests       OtpRequest[]
+  sentNotifications Notification[]    @relation("NotificationRecipient")
+  bookingsSponsored Booking[]         @relation("SponsorBookings")
+  vouchesMade       SponsorVouch[]
+  managerBookings   Booking[]         @relation("ManagerBookings")
+  checkIns          CheckInRecord[]
+  incidentsReported IncidentReport[]
+  disputesRaised    Dispute[]
+  disputeComments   DisputeComment[]
+  reviewsGiven      Review[]
+  auditActions      AuditLog[]        @relation("ActorAudit")
+  filesUploaded     File[]
+  verifiedOrgs      Organization[]    @relation("VerifiedOrgs")
+
+  @@index([phone])
+  @@index([email])
+  @@map("users")
+}
+
+model Membership {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId         String   @db.Uuid
+  organizationId String   @db.Uuid
+  role           UserRole
+  isActive       Boolean  @default(true)
+  joinedAt       DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role, isActive])
+  @@map("memberships")
+}
+
+model RefreshToken {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique @db.VarChar(64)
+  jti       String    @unique @db.Uuid
+  isRevoked Boolean   @default(false)
+  expiresAt DateTime
+  ip        String?   @db.VarChar(45)
+  userAgent String?   @db.VarChar(500)
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRevoked])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model OtpRequest {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  phone     String   @db.VarChar(10)
+  otpHash   String   @db.VarChar(64)
+  attempts  Int      @default(0)
+  isUsed    Boolean  @default(false)
+  expiresAt DateTime
+  ip        String?  @db.VarChar(45)
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [phone], references: [phone])
+
+  @@index([phone, isUsed, expiresAt])
+  @@map("otp_requests")
+}
+
+model IdempotencyKey {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  key          String   @unique @db.VarChar(36)
+  userId       String   @db.Uuid
+  endpoint     String   @db.VarChar(200)
+  responseCode Int
+  responseBody Json
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([key])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}
+
+// ──────────────────────────────────────────────────────────
+// LABS
+// ──────────────────────────────────────────────────────────
+
+model Lab {
+  id              String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId  String   @db.Uuid
+  name            String   @db.VarChar(200)
+  type            LabType
+  description     String?  @db.Text
+  capacity        Int
+  areasqft        Decimal? @db.Decimal(8, 2)
+  floor           Int?
+  buildingName    String?  @db.VarChar(100)
+  lat             Decimal? @db.Decimal(10, 7)
+  lng             Decimal? @db.Decimal(10, 7)
+  isActive        Boolean  @default(true)
+  isAccessible    Boolean  @default(false)
+  accessibilityNotes String? @db.VarChar(500)
+  safetyNotes     String?  @db.Text
+  trustScore      Decimal  @default(50) @db.Decimal(5, 2)
+  totalBookings   Int      @default(0)
+  totalHoursShared Decimal @default(0) @db.Decimal(10, 2)
+  averageRating   Decimal? @db.Decimal(3, 2)
+  version         Int      @default(1)
+  deletedAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  photos       LabPhoto[]
+  equipment    Equipment[]
+  rules        LabRules[]
+  blackouts    BlackoutDate[]
+  bookings     Booking[]
+  reviews      Review[]
+
+  @@index([organizationId, isActive])
+  @@index([type, isActive])
+  @@index([district: false]) // covered by org join
+  @@map("labs")
+}
+
+model LabPhoto {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  labId     String   @db.Uuid
+  fileId    String   @db.Uuid
+  url       String   @db.VarChar(500)
+  caption   String?  @db.VarChar(200)
+  isPrimary Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  lab  Lab  @relation(fields: [labId], references: [id], onDelete: Cascade)
+  file File @relation(fields: [fileId], references: [id])
+
+  @@index([labId, isPrimary])
+  @@map("lab_photos")
+}
+
+model Equipment {
+  id               String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  labId            String          @db.Uuid
+  name             String          @db.VarChar(200)
+  description      String?         @db.VarChar(500)
+  quantity         Int             @default(1)
+  condition        EquipCondition  @default(GOOD)
+  isRestricted     Boolean         @default(false)
+  restrictionNotes String?         @db.VarChar(500)
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  lab Lab @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@index([labId])
+  @@map("equipment")
+}
+
+// Lab Rules – versioned (each update creates a new row)
+model LabRules {
+  id             String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  labId          String      @db.Uuid
+  version        Int         @default(1)
+  isActive       Boolean     @default(true)
+
+  // Timing
+  allowedDays    DayOfWeek[]
+  allowedStartTime String    @db.VarChar(5)  // HH:mm
+  allowedEndTime   String    @db.VarChar(5)  // HH:mm
+  holidayOnly      Boolean   @default(false)
+  minDurationMinutes Int     @default(60)
+  maxDurationMinutes Int     @default(240)
+  advanceNoticeDays  Int     @default(3)
+  maxAdvanceBookingDays Int  @default(30)
+
+  // Group constraints
+  maxGroupSize     Int        @default(30)
+  minClassStandard Int?
+  minAgeYears      Int?
+  supervisionRatioAdults   Int @default(1)
+  supervisionRatioStudents Int @default(15)
+
+  // Access control
+  requiresVerifiedSponsor Boolean @default(true)
+  requiresParentConsent   Boolean @default(false)
+  restrictedEquipmentIds  String[] @db.Uuid
+
+  // Org limits
+  maxBookingsPerOrgPerMonth   Int     @default(4)
+  autoApproveForTrustedScore  Decimal? @db.Decimal(5, 2)
+
+  createdByUserId String   @db.Uuid
+  createdAt       DateTime @default(now())
+
+  lab        Lab       @relation(fields: [labId], references: [id], onDelete: Cascade)
+  createdBy  User      @relation(fields: [createdByUserId], references: [id])
+  bookings   Booking[] @relation("BookingRules")
+
+  @@unique([labId, version])
+  @@index([labId, isActive])
+  @@map("lab_rules")
+}
+
+model BlackoutDate {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  labId         String   @db.Uuid
+  date          DateTime @db.Date
+  reason        String?  @db.VarChar(200)
+  createdByUserId String @db.Uuid
+  createdAt     DateTime @default(now())
+
+  lab       Lab  @relation(fields: [labId], references: [id], onDelete: Cascade)
+  createdBy User @relation(fields: [createdByUserId], references: [id])
+
+  @@unique([labId, date])
+  @@index([labId, date])
+  @@map("blackout_dates")
+}
+
+// ──────────────────────────────────────────────────────────
+// STUDENT GROUPS & VOUCHING
+// ──────────────────────────────────────────────────────────
+
+model StudentGroup {
+  id               String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId   String   @db.Uuid
+  sponsorUserId    String   @db.Uuid
+  name             String   @db.VarChar(200)
+  description      String?  @db.VarChar(1000)
+  // Privacy: No student names stored — only aggregates
+  headcount        Int
+  classRangeMin    Int
+  classRangeMax    Int
+  ageRangeMin      Int?
+  ageRangeMax      Int?
+  emergencyContactName     String @db.VarChar(100)
+  emergencyContactPhone    String @db.VarChar(10)
+  emergencyContactRelation String @db.VarChar(50)
+  isActive         Boolean  @default(true)
+  version          Int      @default(1)
+  deletedAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  sponsor      User          @relation(fields: [sponsorUserId], references: [id])
+  bookings     Booking[]
+  vouches      SponsorVouch[]
+
+  @@index([organizationId, isActive])
+  @@index([sponsorUserId])
+  @@map("student_groups")
+}
+
+model SponsorVouch {
+  id                     String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId              String   @unique @db.Uuid
+  sponsorUserId          String   @db.Uuid
+  studentGroupId         String   @db.Uuid
+  declarationText        String   @db.Text
+  declarationTimestamp   DateTime @default(now())
+  declarationIp          String   @db.VarChar(45)
+  consentChecklist       Json
+  parentConsentObtained  Boolean  @default(false)
+  supervisingAdultName   String   @db.VarChar(100)
+  supervisingAdultPhone  String   @db.VarChar(10)
+  supervisingAdultRelation String @db.VarChar(50)
+  createdAt              DateTime @default(now())
+
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  sponsor      User         @relation(fields: [sponsorUserId], references: [id])
+  studentGroup StudentGroup @relation(fields: [studentGroupId], references: [id])
+
+  @@map("sponsor_vouches")
+}
+
+// ──────────────────────────────────────────────────────────
+// BOOKINGS (core state machine)
+// ──────────────────────────────────────────────────────────
+
+model Booking {
+  id              String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  labId           String        @db.Uuid
+  organizationId  String        @db.Uuid
+  sponsorUserId   String        @db.Uuid
+  studentGroupId  String        @db.Uuid
+  rulesVersionId  String        @db.Uuid
+  status          BookingStatus @default(DRAFT)
+  version         Int           @default(1)
+
+  // Time (stored UTC; UI shows IST)
+  startTime       DateTime
+  endTime         DateTime
+  bookingDate     DateTime      @db.Date
+
+  // Snapshot at booking time
+  headcount              Int
+  purposeDescription     String   @db.Text
+  equipmentRequested     String[] @db.Uuid
+  specialRequirements    String?  @db.VarChar(500)
+
+  // Rules engine output snapshot
+  rulesDecisionJson      Json?
+
+  // Check-in
+  checkInCode            String?  @unique @db.VarChar(6)
+  checkInCodeExpiresAt   DateTime?
+
+  // Manager actions
+  managerId              String?  @db.Uuid
+  managerNote            String?  @db.VarChar(1000)
+  rejectionReason        String?  @db.VarChar(500)
+  slaDeadline            DateTime?
+
+  // Idempotency
+  idempotencyKey         String?  @unique @db.VarChar(36)
+
+  version         Int      @default(1)
+  deletedAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  lab            Lab                  @relation(fields: [labId], references: [id])
+  organization   Organization         @relation("OrgBookings", fields: [organizationId], references: [id])
+  sponsor        User                 @relation("SponsorBookings", fields: [sponsorUserId], references: [id])
+  studentGroup   StudentGroup         @relation(fields: [studentGroupId], references: [id])
+  rulesVersion   LabRules             @relation("BookingRules", fields: [rulesVersionId], references: [id])
+  manager        User?                @relation("ManagerBookings", fields: [managerId], references: [id])
+  vouch          SponsorVouch?
+  statusHistory  BookingStatusHistory[]
+  checkInRecord  CheckInRecord?
+  incidents      IncidentReport[]
+  dispute        Dispute?
+  review         Review?
+
+  @@index([labId, status, startTime])
+  @@index([organizationId, status])
+  @@index([sponsorUserId, status])
+  @@index([status, slaDeadline])
+  @@index([bookingDate, labId])
+  @@map("bookings")
+}
+
+// NOTE: The DB-level exclusion constraint is added via SQL migration:
+// ALTER TABLE bookings ADD CONSTRAINT no_double_booking
+//   EXCLUDE USING gist (
+//     lab_id WITH =,
+//     tstzrange(start_time, end_time, '[)') WITH &&
+//   )
+//   WHERE (status IN ('APPROVED', 'CHECKED_IN'));
+
+model BookingStatusHistory {
+  id          String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId   String        @db.Uuid
+  fromStatus  BookingStatus?
+  toStatus    BookingStatus
+  actorId     String        @db.Uuid
+  actorRole   UserRole
+  note        String?       @db.VarChar(1000)
+  createdAt   DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+  actor   User    @relation(fields: [actorId], references: [id])
+
+  @@index([bookingId, createdAt])
+  @@map("booking_status_history")
+}
+
+model CheckInRecord {
+  id                  String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId           String   @unique @db.Uuid
+  checkInAt           DateTime @default(now())
+  checkOutAt          DateTime?
+  checkedInByUserId   String   @db.Uuid
+  checkInMethod       CheckInMethod
+  actualHeadcount     Int?
+  supervisingAdultName  String?  @db.VarChar(100)
+  supervisingAdultPhone String?  @db.VarChar(10)
+  damageFlagged       Boolean  @default(false)
+  damageNotes         String?  @db.VarChar(1000)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  booking     Booking @relation(fields: [bookingId], references: [id])
+  checkedInBy User    @relation(fields: [checkedInByUserId], references: [id])
+
+  @@map("check_in_records")
+}
+
+// ──────────────────────────────────────────────────────────
+// INCIDENTS & DISPUTES
+// ──────────────────────────────────────────────────────────
+
+model IncidentReport {
+  id               String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId        String           @db.Uuid
+  reportedByUserId String           @db.Uuid
+  severity         IncidentSeverity
+  title            String           @db.VarChar(200)
+  description      String           @db.Text
+  evidenceFileIds  String[]         @db.Uuid
+  adminNote        String?          @db.Text
+  resolution       IncidentResolution?
+  resolvedByUserId String?          @db.Uuid
+  resolvedAt       DateTime?
+  version          Int              @default(1)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  booking    Booking @relation(fields: [bookingId], references: [id])
+  reportedBy User    @relation(fields: [reportedByUserId], references: [id])
+  resolvedBy User?   @relation(fields: [resolvedByUserId], references: [id])
+
+  @@index([bookingId])
+  @@index([severity, resolution])
+  @@map("incident_reports")
+}
+
+model Dispute {
+  id               String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId        String        @unique @db.Uuid
+  raisedByUserId   String        @db.Uuid
+  raisedByOrgId    String        @db.Uuid
+  title            String        @db.VarChar(200)
+  description      String        @db.Text
+  status           DisputeStatus @default(OPEN)
+  adminNote        String?       @db.Text
+  resolution       String?       @db.Text
+  resolvedByUserId String?       @db.Uuid
+  resolvedAt       DateTime?
+  version          Int           @default(1)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  booking    Booking          @relation(fields: [bookingId], references: [id])
+  raisedBy   User             @relation(fields: [raisedByUserId], references: [id])
+  raisedByOrg Organization    @relation("OrgDisputes", fields: [raisedByOrgId], references: [id])
+  resolvedBy User?            @relation(fields: [resolvedByUserId], references: [id])
+  comments   DisputeComment[]
+
+  @@index([status, createdAt])
+  @@map("disputes")
+}
+
+model DisputeComment {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  disputeId  String   @db.Uuid
+  authorId   String   @db.Uuid
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+
+  dispute Dispute @relation(fields: [disputeId], references: [id])
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@index([disputeId, createdAt])
+  @@map("dispute_comments")
+}
+
+// ──────────────────────────────────────────────────────────
+// REVIEWS & TRUST
+// ──────────────────────────────────────────────────────────
+
+model Review {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId      String   @unique @db.Uuid
+  reviewerUserId String   @db.Uuid
+  reviewerOrgId  String   @db.Uuid
+  targetLabId    String   @db.Uuid
+  rating         Int      // 1-5
+  comment        String?  @db.Text
+  isPublic       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  reviewer     User         @relation(fields: [reviewerUserId], references: [id])
+  reviewerOrg  Organization @relation(fields: [reviewerOrgId], references: [id])
+  lab          Lab          @relation(fields: [targetLabId], references: [id])
+
+  @@index([targetLabId, isPublic])
+  @@index([reviewerOrgId])
+  @@map("reviews")
+}
+
+model TrustScoreRecord {
+  organizationId       String   @id @db.Uuid
+  score                Decimal  @db.Decimal(5, 2)
+  completedBookings    Int      @default(0)
+  onTimeRate           Decimal  @default(100) @db.Decimal(5, 2)
+  zeroIncidentRate     Decimal  @default(100) @db.Decimal(5, 2)
+  averageRating        Decimal  @default(0) @db.Decimal(3, 2)
+  disputesLost         Int      @default(0)
+  noShows              Int      @default(0)
+  accountAgeMonths     Int      @default(0)
+  breakdownJson        Json
+  lastComputedAt       DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("trust_score_records")
+}
+
+model TrustScoreEvent {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId String   @db.Uuid
+  eventType      String   @db.VarChar(50)
+  delta          Decimal  @db.Decimal(6, 2)
+  previousScore  Decimal  @db.Decimal(5, 2)
+  newScore       Decimal  @db.Decimal(5, 2)
+  reason         String   @db.VarChar(500)
+  refEntityType  String?  @db.VarChar(50)
+  refEntityId    String?  @db.Uuid
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId, createdAt])
+  @@map("trust_score_events")
+}
+
+// ──────────────────────────────────────────────────────────
+// NOTIFICATIONS
+// ──────────────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId    String           @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(200)
+  titleHi   String           @db.VarChar(200)
+  body      String           @db.Text
+  bodyHi    String           @db.Text
+  dataJson  Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation("NotificationRecipient", fields: [userId], references: [id])
+
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}
+
+// ──────────────────────────────────────────────────────────
+// AUDIT LOG (append-only, hash-chained)
+// UPDATE and DELETE revoked at DB level via trigger in migration
+// ──────────────────────────────────────────────────────────
+
+model AuditLog {
+  id             String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  sequence       BigInt      @default(autoincrement())
+  actorId        String?     @db.Uuid
+  actorRole      UserRole?
+  action         AuditAction
+  entityType     String      @db.VarChar(50)
+  entityId       String?     @db.Uuid
+  organizationId String?     @db.Uuid
+  beforeJson     Json?
+  afterJson      Json?
+  ip             String?     @db.VarChar(45)
+  userAgent      String?     @db.VarChar(500)
+  requestId      String?     @db.VarChar(36)
+  prevHash       String      @db.VarChar(64)
+  hash           String      @unique @db.VarChar(64)
+  createdAt      DateTime    @default(now())
+
+  actor        User?         @relation("ActorAudit", fields: [actorId], references: [id])
+  organization Organization? @relation("OrgAudit", fields: [organizationId], references: [id])
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([action, createdAt])
+  @@index([sequence])
+  @@map("audit_logs")
+}
+
+// ──────────────────────────────────────────────────────────
+// FILES
+// ──────────────────────────────────────────────────────────
+
+model File {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  uploadedBy   String    @db.Uuid
+  bucket       String    @db.VarChar(100)
+  key          String    @db.VarChar(500)
+  url          String    @db.VarChar(500)
+  mimeType     String    @db.VarChar(100)
+  sizeBytes    BigInt
+  isVirusSafe  Boolean?
+  createdAt    DateTime  @default(now())
+
+  uploader      User          @relation(fields: [uploadedBy], references: [id])
+  orgDocuments  Organization[] @relation("OrgDocuments")
+  labPhotos     LabPhoto[]
+
+  @@index([uploadedBy])
+  @@map("files")
+}
+
+// ──────────────────────────────────────────────────────────
+// ENUMS
+// ──────────────────────────────────────────────────────────
+
+enum OrgType {
+  OWNER_SCHOOL
+  REQUESTING_SCHOOL
+  COACHING
+  NGO
+}
+
+enum VerificationStatus {
+  PENDING
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum UserRole {
+  OWNER_SCHOOL
+  MANAGER
+  TEACHER_SPONSOR
+  ADMIN
+}
+
+enum LabType {
+  SCIENCE_LAB
+  COMPUTER_LAB
+  PROJECTOR_ROOM
+  LIBRARY
+  WORKSHOP
+}
+
+enum BookingStatus {
+  DRAFT
+  SUBMITTED
+  AUTO_REJECTED
+  PENDING_MANAGER
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+  EXPIRED
+  CHECKED_IN
+  COMPLETED
+  INCIDENT_FLAGGED
+  CANCELLED
+  NO_SHOW
+  DISPUTED
+  RESOLVED
+}
+
+enum DayOfWeek {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+  SUN
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentResolution {
+  WARN
+  SUSPEND
+  PENALTY
+  DISMISS
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  BOOKING_SUBMITTED
+  BOOKING_APPROVED
+  BOOKING_REJECTED
+  BOOKING_CHANGES_REQUESTED
+  BOOKING_CANCELLED
+  BOOKING_REMINDER
+  CHECK_IN_DUE
+  CHECKIN_CONFIRMED
+  CHECKOUT_CONFIRMED
+  INCIDENT_REPORTED
+  DISPUTE_OPENED
+  DISPUTE_RESOLVED
+  ORG_VERIFIED
+  ORG_REJECTED
+  ORG_SUSPENDED
+  TRUST_SCORE_CHANGED
+  SYSTEM
+}
+
+enum AuditAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  OTP_SENT
+  OTP_VERIFIED
+  BOOKING_STATUS_CHANGE
+  ORG_VERIFICATION
+  INCIDENT_CREATED
+  DISPUTE_CREATED
+  DISPUTE_RESOLVED
+  AUDIT_CHAIN_VERIFIED
+  EXPORT
+  SUSPENSION
+}
+
+enum CheckInMethod {
+  OTP
+  QR
+  MANUAL
+}
+
+enum EquipCondition {
+  GOOD
+  FAIR
+  POOR
+  OUT_OF_SERVICE
+}
