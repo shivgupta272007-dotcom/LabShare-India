@@ -16,9 +16,13 @@ interface AuthContextType {
   logout: () => void
 }
 
-const defaultClient = new ApiClient(
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'
-)
+const getApiBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL
+  if (typeof window !== 'undefined') return `${window.location.origin}/api/v1`
+  return 'http://localhost:3001/api/v1'
+}
+
+const defaultClient = new ApiClient(getApiBaseUrl())
 
 const AuthContext = createContext<AuthContextType>({
   user: null,

@@ -30,15 +30,21 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "turbo": "^2.0.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vercel": "^65.9.0"
   },
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md,yaml,yml}": ["prettier --write"]
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
   },
   "packageManager": "pnpm@9.1.0"
 }
