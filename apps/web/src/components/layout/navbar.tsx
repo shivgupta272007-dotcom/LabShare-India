@@ -103,20 +103,14 @@ export function Navbar() {
       </div>
 
       <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary-700 flex items-center justify-center text-white shadow-sm font-bold text-xl">
-            LS
-          </div>
-          <div>
-            <div className="font-extrabold text-lg tracking-tight flex items-center space-x-1.5 text-foreground">
-              <span>LabShare India</span>
-              <span className="text-xs font-normal text-muted-foreground">|</span>
-              <span className="text-sm font-bold text-primary">लैबशेयर भारत</span>
-            </div>
-            <div className="text-[10px] text-muted-foreground">
-              {locale === 'en' ? 'National School & Community Lab Network' : 'राष्ट्रीय विद्यालय एवं सामुदायिक प्रयोगशाला नेटवर्क'}
-            </div>
+        {/* Official Brand Logo */}
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="bg-white rounded-xl px-2.5 py-1 shadow-xs border border-slate-200/90 flex items-center justify-center transition-all group-hover:shadow-md group-hover:scale-[1.02]">
+            <img
+              src="/logo.png"
+              alt="LabShare India | लैबशेयर इंडिया - हर लैब, हर बच्चे के लिए"
+              className="h-10 sm:h-11 w-auto object-contain"
+            />
           </div>
         </Link>
 

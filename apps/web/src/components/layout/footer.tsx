@@ -13,12 +13,15 @@ export function Footer() {
       <div className="container py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-white font-bold text-sm">
-                LS
+            <Link href="/" className="inline-block group">
+              <div className="bg-white rounded-xl px-2.5 py-1.5 shadow-xs border border-slate-200/90 inline-flex items-center transition-all group-hover:shadow-md">
+                <img
+                  src="/logo.png"
+                  alt="LabShare India | लैबशेयर इंडिया"
+                  className="h-10 w-auto object-contain"
+                />
               </div>
-              <span className="font-extrabold text-base">LabShare | लैबशेयर</span>
-            </div>
+            </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {locale === 'en'
                 ? 'Empowering rural schools and underfunded coaching groups with idle science and technology labs after hours. Safe, audited, and transparent.'

@@ -90,14 +90,23 @@ export default function HomePage() {
         <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* Left Column: Mission, Headline & CTAs */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* National Network Badge */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-semibold mb-6 shadow-sm border border-emerald-300 dark:border-emerald-800">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>
-                {locale === 'en'
-                  ? 'Pan-India Network: Connecting 660+ Navodayas & Kendriya Vidyalayas'
-                  : 'अखिल भारतीय नेटवर्क: नवोदय, केंद्रीय विद्यालय एवं उत्कृष्ट स्कूलों की साझेदारी'}
-              </span>
+            {/* National Network Badge + Brand Mark */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="bg-white rounded-xl px-3 py-1 shadow-xs border border-slate-200/90 flex items-center">
+                <img
+                  src="/logo.png"
+                  alt="LabShare India | हर लैब, हर बच्चे के लिए"
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-semibold shadow-sm border border-emerald-300 dark:border-emerald-800">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>
+                  {locale === 'en'
+                    ? 'Pan-India Network: Connecting 660+ Navodayas & KVs'
+                    : 'अखिल भारतीय नेटवर्क: 660+ नवोदय एवं केंद्रीय विद्यालय'}
+                </span>
+              </div>
             </div>
 
             {/* Main Headline */}

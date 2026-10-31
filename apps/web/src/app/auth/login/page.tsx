@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight,
@@ -86,10 +87,16 @@ export default function LoginPage() {
   return (
     <div className="container py-12 flex flex-col items-center max-w-xl">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white font-extrabold text-2xl mx-auto mb-3 shadow">
-          LS
-        </div>
+      <div className="text-center mb-8 flex flex-col items-center">
+        <Link href="/" className="mb-4 inline-block group">
+          <div className="bg-white rounded-2xl px-4 py-2 shadow-sm border border-slate-200/90 transition-all group-hover:shadow-md group-hover:scale-[1.02]">
+            <img
+              src="/logo.png"
+              alt="LabShare India | लैबशेयर इंडिया"
+              className="h-14 sm:h-16 w-auto object-contain"
+            />
+          </div>
+        </Link>
         <h1 className="text-2xl font-extrabold tracking-tight">
           {locale === 'en' ? 'Sign In to LabShare' : 'लैबशेयर में साइन इन करें'}
         </h1>
