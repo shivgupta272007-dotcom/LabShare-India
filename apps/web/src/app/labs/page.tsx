@@ -97,8 +97,10 @@ export default function LabsSearchPage() {
         sortBy,
       })
       .then((data) => {
+        // Safely extract lab list whether array or object with data property
+        const rawList: Lab[] = Array.isArray(data) ? (data as Lab[]) : (((data as any)?.data as Lab[]) || [])
         // Compute precise distance client-side as well
-        const withDistances = data.map((lab) => {
+        const withDistances = rawList.map((lab) => {
           const lLat = lab.lat || lab.organization?.lat
           const lLng = lab.lng || lab.organization?.lng
           const dKm =

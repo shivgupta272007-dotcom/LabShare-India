@@ -29,7 +29,11 @@ export class ApiClient {
   private baseUrl: string
   private token: string | null = null
 
-  constructor(baseUrl: string = 'http://localhost:3001/api/v1') {
+  constructor(baseUrl: string = '/api/v1') {
+    this.baseUrl = baseUrl.replace(/\/$/, '')
+  }
+
+  setBaseUrl(baseUrl: string) {
     this.baseUrl = baseUrl.replace(/\/$/, '')
   }
 
@@ -38,7 +42,22 @@ export class ApiClient {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`
+    // If running in browser and baseUrl points to localhost but page is on remote domain, auto-correct to same-origin
+    let base = this.baseUrl
+    const win = typeof globalThis !== 'undefined' && (globalThis as any).window ? (globalThis as any).window : null
+    if (
+      win &&
+      base.includes('localhost') &&
+      win.location.hostname !== 'localhost' &&
+      win.location.hostname !== '127.0.0.1'
+    ) {
+      base = `${win.location.origin}/api/v1`
+      this.baseUrl = base
+    }
+
+    const url = endpoint.startsWith('http')
+      ? endpoint
+      : `${base}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -107,7 +126,7 @@ export class ApiClient {
   // Labs & Availability
   // ──────────────────────────────────────────────────────────
   labs = {
-    search: (params: {
+    search: async (params: {
       type?: string
       district?: string
       state?: string
@@ -130,7 +149,10 @@ export class ApiClient {
       if (params.lng) q.set('lng', params.lng.toString())
       if (params.radiusKm) q.set('radiusKm', params.radiusKm.toString())
       if (params.sortBy) q.set('sortBy', params.sortBy)
-      return this.request<Array<Lab & { distanceKm?: number }>>(`/labs?${q.toString()}`)
+      const res = await this.request<any>(`/labs?${q.toString()}`)
+      if (Array.isArray(res)) return res as Array<Lab & { distanceKm?: number }>
+      if (res && Array.isArray(res.data)) return res.data as Array<Lab & { distanceKm?: number }>
+      return []
     },
 
     getById: (id: string) => this.request<Lab>(`/labs/${id}`),

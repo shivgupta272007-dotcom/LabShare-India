@@ -17,12 +17,14 @@ interface AuthContextType {
 }
 
 const getApiBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL
   if (typeof window !== 'undefined') return `${window.location.origin}/api/v1`
-  return 'http://localhost:3001/api/v1'
+  if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost')) {
+    return process.env.NEXT_PUBLIC_API_URL
+  }
+  return '/api/v1'
 }
 
-const defaultClient = new ApiClient(getApiBaseUrl())
+const defaultClient = new ApiClient('/api/v1')
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -38,7 +40,10 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [client] = useState<ApiClient>(() => defaultClient)
+  const [client] = useState<ApiClient>(() => {
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/api/v1` : getApiBaseUrl()
+    return new ApiClient(url)
+  })
   const [user, setUser] = useState<User | null>(null)
   const [role, setRole] = useState<UserRole>('TEACHER_SPONSOR')
   const [org, setOrg] = useState<Organization | null>(null)
@@ -46,6 +51,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      client.setBaseUrl(`${window.location.origin}/api/v1`)
+    }
+
     // Check local storage or initialize with default Teacher Sponsor demo account
     const initAuth = async () => {
       try {

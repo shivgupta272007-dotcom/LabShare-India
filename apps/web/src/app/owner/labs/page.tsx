@@ -43,10 +43,11 @@ export default function OwnerLabsPage() {
     client.labs
       .search({})
       .then((all) => {
-        setLabs(all)
-        if (all[0]) {
-          setSelectedLab(all[0])
-          const r = all[0].currentRules
+        const list: Lab[] = Array.isArray(all) ? (all as Lab[]) : (((all as any)?.data as Lab[]) || [])
+        setLabs(list)
+        if (list[0]) {
+          setSelectedLab(list[0])
+          const r = list[0].currentRules
           if (r) {
             setAllowedDays(r.allowedDays)
             setStartTime(r.allowedStartTime)

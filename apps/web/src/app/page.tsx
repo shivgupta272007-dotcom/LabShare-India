@@ -77,8 +77,9 @@ export default function HomePage() {
     client.labs
       .search({ sortBy: 'trust' })
       .then((labs) => {
-        setAllLabs(labs)
-        setFeaturedLabs(labs.slice(0, 3))
+        const list: Lab[] = Array.isArray(labs) ? (labs as Lab[]) : (((labs as any)?.data as Lab[]) || [])
+        setAllLabs(list)
+        setFeaturedLabs(list.slice(0, 3))
       })
       .catch(() => {})
   }, [client])

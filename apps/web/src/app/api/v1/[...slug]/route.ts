@@ -149,16 +149,17 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
   if (path === 'labs') {
     const latStr = url.searchParams.get('lat')
     const lngStr = url.searchParams.get('lng')
-    const search = url.searchParams.get('search')?.toLowerCase() || ''
+    const search = (url.searchParams.get('search') || url.searchParams.get('query') || '').toLowerCase()
     const type = url.searchParams.get('type')
     const district = url.searchParams.get('district')
+    const city = url.searchParams.get('city')
     const state = url.searchParams.get('state')
 
     if (latStr && lngStr) {
       const lat = parseFloat(latStr)
       const lng = parseFloat(lngStr)
       if (!isNaN(lat) && !isNaN(lng)) {
-        generateNearbyLabs(lat, lng, district || undefined, state || undefined)
+        generateNearbyLabs(lat, lng, city || district || undefined, state || undefined)
       }
     }
 
@@ -183,9 +184,11 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
       labs = labs.filter(
         (l) =>
           l.name.toLowerCase().includes(search) ||
-          l.organization?.name.toLowerCase().includes(search) ||
-          l.organization?.district.toLowerCase().includes(search) ||
-          l.organization?.state.toLowerCase().includes(search)
+          l.type.toLowerCase().includes(search) ||
+          (l.description || '').toLowerCase().includes(search) ||
+          (l.organization?.name || '').toLowerCase().includes(search) ||
+          (l.organization?.district || '').toLowerCase().includes(search) ||
+          (l.organization?.state || '').toLowerCase().includes(search)
       )
     }
 
@@ -193,7 +196,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
       labs = labs.filter((l) => l.type === type)
     }
 
-    if (district) {
+    if (district && district !== 'ALL') {
       labs = labs.filter((l) => l.organization?.district.toLowerCase() === district.toLowerCase())
     }
 
@@ -201,7 +204,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
       labs.sort((a, b) => (a.distanceKm ?? 9999) - (b.distanceKm ?? 9999))
     }
 
-    return NextResponse.json({ data: labs, total: labs.length })
+    return NextResponse.json(labs)
   }
 
   // Single Lab
