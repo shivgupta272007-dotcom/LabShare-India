@@ -76,7 +76,11 @@ pipeWithPrefix(apiProcess.stderr, '[API ERR]', '\x1b[31m')
 
 // 2. Spawn Web
 const webCmd = isProd ? ['start', '-p', '3000'] : ['dev', '-p', '3000']
-const webProcess = spawn('npx', ['next', ...webCmd], {
+const localNextBin = path.join(rootDir, 'apps/web/node_modules/.bin/next')
+const nextExecutable = fs.existsSync(localNextBin) ? localNextBin : 'npx'
+const nextArgs = fs.existsSync(localNextBin) ? webCmd : ['next', ...webCmd]
+
+const webProcess = spawn(nextExecutable, nextArgs, {
   cwd: path.join(rootDir, 'apps/web'),
   env: {
     ...process.env,

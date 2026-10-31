@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import {
   ArrowRight,
   Award,
@@ -12,8 +13,10 @@ import {
   Compass,
   FileCheck,
   Layers,
+  Map as MapIcon,
   MapPin,
   Microscope,
+  Navigation,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -24,11 +27,32 @@ import { useLanguage } from '../context/language-context'
 import { useAuth } from '../context/auth-context'
 import { ImpactMetrics, Lab } from '@labshare/shared'
 
+const InteractiveMap = dynamic(
+  () =>
+    import('../components/maps/interactive-map').then(
+      (mod) => mod.InteractiveMap
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[400px] bg-muted/40 rounded-2xl flex items-center justify-center animate-pulse border">
+        <div className="text-center">
+          <MapPin className="w-8 h-8 text-primary mx-auto mb-2 animate-bounce" />
+          <p className="text-xs font-semibold text-muted-foreground">
+            Loading Google Maps Network...
+          </p>
+        </div>
+      </div>
+    ),
+  }
+)
+
 export default function HomePage() {
   const { locale, t } = useLanguage()
   const { client, switchRole } = useAuth()
   const [metrics, setMetrics] = useState<ImpactMetrics | null>(null)
   const [featuredLabs, setFeaturedLabs] = useState<Lab[]>([])
+  const [allLabs, setAllLabs] = useState<Lab[]>([])
 
   useEffect(() => {
     client.analytics
@@ -50,7 +74,10 @@ export default function HomePage() {
 
     client.labs
       .search({ sortBy: 'trust' })
-      .then((labs) => setFeaturedLabs(labs.slice(0, 3)))
+      .then((labs) => {
+        setAllLabs(labs)
+        setFeaturedLabs(labs.slice(0, 3))
+      })
       .catch(() => {})
   }, [client])
 
@@ -264,6 +291,51 @@ export default function HomePage() {
                 : 'चेकआउट के बाद उपकरणों की स्थिति दर्ज होती है। ट्रस्ट स्कोर बढ़ता है और रिकॉर्ड क्रिप्टोग्राफिक लेजर में दर्ज होता है।'}
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Interactive Google Maps Network Section */}
+      <section className="container">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-6">
+          <div>
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
+              <Compass className="w-3.5 h-3.5 text-primary" />
+              <span>
+                {locale === 'en'
+                  ? 'Connected with Google Maps'
+                  : 'गूगल मैप्स से एकीकृत नेटवर्क'}
+              </span>
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight">
+              {locale === 'en'
+                ? 'Explore Participating School Labs on the Map'
+                : 'मानचित्र पर सहभागी स्कूल प्रयोगशालाएं देखें'}
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              {locale === 'en'
+                ? 'Interactive multi-district network with instant turn-by-turn navigation and distance calculation.'
+                : 'सटीक दूरी और टर्न-बाय-टर्न गूगल नेविगेशन के साथ बुंदेलखंड की प्रयोगशालाएं।'}
+            </p>
+          </div>
+
+          <Link
+            href="/labs"
+            className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-700 transition-colors shadow-sm flex items-center space-x-1.5 shrink-0"
+          >
+            <span>{locale === 'en' ? 'Open Full Map Search' : 'पूर्ण मानचित्र खोजें'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="w-full">
+          <InteractiveMap
+            labs={allLabs}
+            centerLat={25.4484}
+            centerLng={78.5685}
+            zoom={10}
+            height="460px"
+            locale={locale}
+          />
         </div>
       </section>
 

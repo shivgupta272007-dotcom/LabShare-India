@@ -22,7 +22,8 @@ import {
 } from 'lucide-react'
 import { useLanguage } from '../../../context/language-context'
 import { useAuth } from '../../../context/auth-context'
-import { AvailabilitySlot, Lab } from '@labshare/shared'
+import { AvailabilitySlot, Lab, getGoogleMapsDirectionsUrl } from '@labshare/shared'
+import { GoogleMapEmbed } from '../../../components/maps/google-map-embed'
 
 export default function LabDetailPage() {
   const params = useParams()
@@ -206,6 +207,28 @@ export default function LabDetailPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* School & Lab Google Maps Section */}
+          <div className="space-y-2">
+            <h2 className="text-base font-bold flex items-center space-x-2">
+              <MapPin className="w-5 h-5 text-primary" />
+              <span>
+                {locale === 'en'
+                  ? 'School Campus Location (Google Maps)'
+                  : 'स्कूल परिसर स्थान (गूगल मैप्स)'}
+              </span>
+            </h2>
+            <GoogleMapEmbed
+              lat={lab.lat || lab.organization?.lat || 25.3725}
+              lng={lab.lng || lab.organization?.lng || 78.7364}
+              title={lab.organization?.name || lab.name}
+              address={lab.organization?.address}
+              district={lab.organization?.district}
+              state={lab.organization?.state}
+              height="340px"
+              locale={locale}
+            />
           </div>
 
           {/* Reviews List */}
